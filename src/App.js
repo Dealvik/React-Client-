@@ -27,30 +27,7 @@ function App() {
   const [employeeList, setEmployeeList] = useState([]);
 
   const [sorted, setSorted] = useState(false);
-
-  // const register = () => {
-  //   Axios.post("http://localhost:3001/register", {
-  //     username: usernameReg,
-  //     password: passwordReg,
-  //   }).then((Response) => {
-  //     console.log(Response);
-  //   });
-  // };
-
-  // const login = () => {
-  //   Axios.post("http://localhost:3001/login", {
-  //     username: username,
-  //     password: password,
-  //   }).then((Response) => {
-
-  //     if (Response.data.message) {
-  //       setLoginStatus(Response.data.message)
-  //     } else {
-  //       setLoginStatus(Response.data[0].username)
-  //     }
-  //   });
-  // }
-
+  
   const addEmployee = () => {
     Axios.post("http://localhost:5000/create", {
       name: name,
@@ -64,7 +41,7 @@ function App() {
   };
 
   const toggleSort = (sorted) => {
-    Axios.get("http://localhost:3001/employeesSorted?order=" + sorted).then(
+    Axios.get("http://localhost:5000/employeesSorted?order=" + sorted).then(
       (response) => {
         setEmployeeList(response.data);
         setSorted(!sorted);
@@ -74,13 +51,13 @@ function App() {
   };
 
   const getEmployees = () => {
-    Axios.get("http://localhost:3001/employees").then((response) => {
+    Axios.get("http://localhost:5000/employees").then((response) => {
       setEmployeeList(response.data);
     });
   };
 
   const updateEmployeeWage = (id) => {
-    Axios.put("http://localhost:3001/update", { wage: newWage, id: id }).then(
+    Axios.put("http://localhost:5000/update", { wage: newWage, id: id }).then(
       () => {
         // getEmployees();
         setEmployeeList(
@@ -102,7 +79,7 @@ function App() {
   };
 
   const deleteEmployee = (id) => {
-    Axios.delete(`http://localhost:3001/delete/${id}`).then((response) => {
+    Axios.delete(`http://localhost:5000/delete/${id}`).then((response) => {
       setEmployeeList(
         employeeList.filter((val) => {
           return val.id != id;
