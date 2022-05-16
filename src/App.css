@@ -46,14 +46,14 @@
     cursor: pointer;
   }
   
-  .employees {
+  .boards {
     display: flex;
     align-items: center;
     flex-direction: column;
     width: 100%;
   }
   
-  .employee {
+  .board {
     width: 700px;
     height: auto;
     border: 1px solid black;
@@ -63,7 +63,7 @@
     font-family: 'Courier New', Courier, monospace;
   }
   
-  .employee h3 {
+  .board h3 {
     margin: 20px;
   
   }

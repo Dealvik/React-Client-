@@ -8,14 +8,6 @@ import Navbar from "./components/Navbar";
 import Register from "./components/Register";
 
 function App() {
-  const [usernameReg, setUserNameReg] = useState("");
-  const [passwordReg, setPasswordReg] = useState("");
-  
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-
-  const [loginStatus, setLoginStatus] = useState("");
-
   const [name, setName] = useState("");
   const [age, setAge] = useState(0);
   const [country, setCountry] = useState("");
@@ -24,11 +16,11 @@ function App() {
 
   const [newWage, setNewWage] = useState(0);
 
-  const [employeeList, setEmployeeList] = useState([]);
+  const [boardList, setboardList] = useState([]);
 
   const [sorted, setSorted] = useState(false);
-  
-  const addEmployee = () => {
+
+  const addBoard = () => {
     Axios.post("http://localhost:5000/create", {
       name: name,
       age: age,
@@ -36,32 +28,31 @@ function App() {
       position: position,
       wage: wage,
     }).then(() => {
-      getEmployees();
+      getBoards();
     });
   };
 
   const toggleSort = (sorted) => {
-    Axios.get("http://localhost:5000/employeesSorted?order=" + sorted).then(
+    Axios.get("http://localhost:5000/boardsSorted?order=" + sorted).then(
       (response) => {
-        setEmployeeList(response.data);
+        setboardList(response.data);
         setSorted(!sorted);
         console.log(response);
       }
     );
   };
 
-  const getEmployees = () => {
-    Axios.get("http://localhost:5000/employees").then((response) => {
-      setEmployeeList(response.data);
+  const getBoards = () => {
+    Axios.get("http://localhost:5000/boards").then((response) => {
+      setboardList(response.data);
     });
   };
 
-  const updateEmployeeWage = (id) => {
+  const updateBoardWage = (id) => {
     Axios.put("http://localhost:5000/update", { wage: newWage, id: id }).then(
       () => {
-        // getEmployees();
-        setEmployeeList(
-          employeeList.map((val) => {
+        setboardList(
+          boardList.map((val) => {
             return val.id == id
               ? {
                   id: val.id,
@@ -78,10 +69,10 @@ function App() {
     );
   };
 
-  const deleteEmployee = (id) => {
+  const deleteBoard = (id) => {
     Axios.delete(`http://localhost:5000/delete/${id}`).then((response) => {
-      setEmployeeList(
-        employeeList.filter((val) => {
+      setboardList(
+        boardList.filter((val) => {
           return val.id != id;
         })
       );
@@ -118,6 +109,7 @@ function App() {
           <input
             type="number"
             onChange={(event) => {
+              // @ts-ignore
               setAge(event.target.value);
             }}
           />
@@ -139,14 +131,15 @@ function App() {
           <input
             type="number"
             onChange={(event) => {
+              // @ts-ignore
               setWage(event.target.value);
             }}
           />
-          <button onClick={addEmployee}>Add Employee</button>
+          <button onClick={addBoard}>Add Boards</button>
         </div>
         <hr />
-        <div className="employees">
-          <button onClick={getEmployees}>Show Employees</button>
+        <div className="boards">
+          <button onClick={getBoards}>Show Boards</button>
 
           <button
             className="toggle-button"
@@ -157,9 +150,9 @@ function App() {
             {sorted ? "Ascending Order ▲" : "Descending Order ▼"}
           </button>
 
-          {employeeList.map((val, key) => {
+          {boardList.map((val, key) => {
             return (
-              <div className="employee">
+              <div className="board">
                 <div>
                   <h3>Name: {val.name}</h3>
                   <h3>Age: {val.age}</h3>
@@ -172,14 +165,15 @@ function App() {
                     type="text"
                     placeholder="20000..."
                     onChange={(event) => {
+                      // @ts-ignore
                       setNewWage(event.target.value);
                     }}
                   />
-                  <button onClick={() => updateEmployeeWage(val.id)}>
+                  <button onClick={() => updateBoardWage(val.id)}>
                     Update
                   </button>
 
-                  <button onClick={() => deleteEmployee(val.id)}>Delete</button>
+                  <button onClick={() => deleteBoard(val.id)}>Delete</button>
                 </div>
               </div>
             );
