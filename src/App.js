@@ -159,6 +159,7 @@ function App() {
                   <h3>Country: {val.country}</h3>
                   <h3>Position: {val.position}</h3>
                   <h3>Wage: {val.wage}</h3>
+                  <h3>Created By: {val.createdByName}</h3>
                 </div>
                 <div>
                   <input
