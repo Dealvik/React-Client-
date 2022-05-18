@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import axios from "axios";
 import { useHistory } from "react-router-dom";
+import Navbar from './Navbar';
 
 const Register = () => {
     const [name, setName] = useState('');
@@ -20,6 +21,7 @@ const Register = () => {
                 confPassword: confPassword
             });
             history.push("/");
+            history.go(0);
         } catch (error) {
             if (error.response) {
                 setMsg(error.response.data.msg);
@@ -28,7 +30,8 @@ const Register = () => {
     }
 
     return (
-        <section className="hero has-background-grey-light is-fullheight is-fullwidth">
+        <section className="hero has-background is-fullheight is-fullwidth">
+        <Navbar signedIn={false} />
             <div className="hero-body">
                 <div className="container">
                     <div className="columns is-centered">

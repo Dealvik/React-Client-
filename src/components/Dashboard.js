@@ -21,11 +21,14 @@ const Dashboard = () => {
             const response = await axios.get('http://localhost:5000/token');
             setToken(response.data.accessToken);
             const decoded = jwt_decode(response.data.accessToken);
+            // @ts-ignore
             setName(decoded.name);
+            // @ts-ignore
             setExpire(decoded.exp);
         } catch (error) {
             if (error.response) {
                 history.push("/");
+                history.go(0);
             }
         }
     }
@@ -34,12 +37,15 @@ const Dashboard = () => {
 
     axiosJWT.interceptors.request.use(async (config) => {
         const currentDate = new Date();
+        // @ts-ignore
         if (expire * 1000 < currentDate.getTime()) {
             const response = await axios.get('http://localhost:5000/token');
             config.headers.Authorization = `Bearer ${response.data.accessToken}`;
             setToken(response.data.accessToken);
             const decoded = jwt_decode(response.data.accessToken);
+            // @ts-ignore
             setName(decoded.name);
+            // @ts-ignore
             setExpire(decoded.exp);
         }
         return config;

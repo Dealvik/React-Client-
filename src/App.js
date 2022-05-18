@@ -53,7 +53,7 @@ function App() {
       () => {
         setboardList(
           boardList.map((val) => {
-            return val.id == id
+            return val.id === id
               ? {
                   id: val.id,
                   name: val.name,
@@ -73,11 +73,15 @@ function App() {
     Axios.delete(`http://localhost:5000/delete/${id}`).then((response) => {
       setboardList(
         boardList.filter((val) => {
-          return val.id != id;
+          return val.id !== id;
         })
       );
     });
   };
+
+  const formateDate = (date) => {
+    return date.split('T')[0];
+  }
 
   return (
     <div>
@@ -86,101 +90,108 @@ function App() {
           <Route exact path="/">
             <Login />
           </Route>
+          <Route path="/login">
+            <Login />
+          </Route>
           <Route path="/register">
             <Register />
           </Route>
           <Route path="/dashboard">
-            <Navbar />
+            <Navbar signedIn={true} />
             <Dashboard />
           </Route>
         </Switch>
       </BrowserRouter>
 
-      <div className="App">
-        <div className="information">
-          <label>Name:</label>
-          <input
-            type="text"
-            onChange={(event) => {
-              setName(event.target.value);
-            }}
-          />
-          <label>Age:</label>
-          <input
-            type="number"
-            onChange={(event) => {
-              // @ts-ignore
-              setAge(event.target.value);
-            }}
-          />
-          <label>Country:</label>
-          <input
-            type="text"
-            onChange={(event) => {
-              setCountry(event.target.value);
-            }}
-          />
-          <label>Position:</label>
-          <input
-            type="text"
-            onChange={(event) => {
-              setPosition(event.target.value);
-            }}
-          />
-          <label>Wage (year):</label>
-          <input
-            type="number"
-            onChange={(event) => {
-              // @ts-ignore
-              setWage(event.target.value);
-            }}
-          />
-          <button onClick={addBoard}>Add Boards</button>
-        </div>
-        <hr />
-        <div className="boards">
-          <button onClick={getBoards}>Show Boards</button>
+      {/* check if we are logged in  */}
+      {window.location.href === "http://localhost:3000/dashboard" === true ? (
+        <div className="App">
+          <div className="information">
+            <label>Name:</label>
+            <input
+              type="text"
+              onChange={(event) => {
+                setName(event.target.value);
+              }}
+            />
+            <label>Age:</label>
+            <input
+              type="number"
+              onChange={(event) => {
+                // @ts-ignore
+                setAge(event.target.value);
+              }}
+            />
+            <label>Country:</label>
+            <input
+              type="text"
+              onChange={(event) => {
+                setCountry(event.target.value);
+              }}
+            />
+            <label>Position:</label>
+            <input
+              type="text"
+              onChange={(event) => {
+                setPosition(event.target.value);
+              }}
+            />
+            <label>Wage (year):</label>
+            <input
+              type="number"
+              onChange={(event) => {
+                // @ts-ignore
+                setWage(event.target.value);
+              }}
+            />
+            <button onClick={addBoard}>Add Boards</button>
+          </div>
+          <hr />
+          <div className="boards">
+            <button onClick={getBoards}>Show Boards</button>
 
-          <button
-            className="toggle-button"
-            onClick={() => {
-              toggleSort(sorted);
-            }}
-          >
-            {sorted ? "Ascending Order ▲" : "Descending Order ▼"}
-          </button>
+            <button
+              className="toggle-button"
+              onClick={() => {
+                toggleSort(sorted);
+              }}
+            >
+              {sorted ? "Ascending Order ▲" : "Descending Order ▼"}
+            </button>
 
-          {boardList.map((val, key) => {
-            return (
-              <div className="board">
-                <div>
-                  <h3>Name: {val.name}</h3>
-                  <h3>Age: {val.age}</h3>
-                  <h3>Country: {val.country}</h3>
-                  <h3>Position: {val.position}</h3>
-                  <h3>Wage: {val.wage}</h3>
-                  <h3>Created By: {val.createdByName}</h3>
+            {boardList.map((val, key) => {
+              return (
+                <div className="board">
+                  <div>
+                    <h3>Name: {val.name}</h3>
+                    <h3>Age: {val.age}</h3>
+                    <h3>Country: {val.country}</h3>
+                    <h3>Position: {val.position}</h3>
+                    <h3>Wage: {val.wage}</h3>
+                    <h3>{val.createdByName ? `Created By: ${val.createdByName}` : null}</h3>
+                    <h3>Created: {formateDate(val.createdOn)}</h3>
+                  </div>
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="20000..."
+                      onChange={(event) => {
+                        // @ts-ignore
+                        setNewWage(event.target.value);
+                      }}
+                    />
+                    <button onClick={() => updateBoardWage(val.id)}>
+                      Update
+                    </button>
+
+                    <button onClick={() => deleteBoard(val.id)}>Delete</button>
+                  </div>
                 </div>
-                <div>
-                  <input
-                    type="text"
-                    placeholder="20000..."
-                    onChange={(event) => {
-                      // @ts-ignore
-                      setNewWage(event.target.value);
-                    }}
-                  />
-                  <button onClick={() => updateBoardWage(val.id)}>
-                    Update
-                  </button>
-
-                  <button onClick={() => deleteBoard(val.id)}>Delete</button>
-                </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
-      </div>
+      ) : null}
     </div>
   );
 }
