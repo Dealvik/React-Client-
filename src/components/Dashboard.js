@@ -3,9 +3,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import jwt_decode from "jwt-decode";
 import { useHistory } from "react-router-dom";
-import NewBoard from "./NewBoard";
 
-const Dashboard = (isActive, toggleClass) => {
+const Dashboard = props => {
   const [name, setName] = useState("");
   const [token, setToken] = useState("");
   const [expire, setExpire] = useState("");
@@ -73,7 +72,15 @@ const Dashboard = (isActive, toggleClass) => {
           <h1>Welcome Back: {name}</h1>
         </div>
         <div className="column is-right">
-          <NewBoard isActive={isActive} toggleClass={toggleClass} />
+          <button
+            className="button is-primary is-pulled-right new-board-btn"
+            onClick={(e) => {
+              e.preventDefault();
+              if (props.isActive) props.setActive(!props.isActive);
+            }}
+          >
+            New Board
+          </button>
         </div>
       </div>
 

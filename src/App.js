@@ -1,6 +1,6 @@
 import Axios from "axios";
 import "./App.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import Dashboard from "./components/Dashboard";
 import Login from "./components/Login";
@@ -12,22 +12,21 @@ function App() {
   const [lastName, setLastName] = useState("");
   const [title, setTitle] = useState("");
 
-  const [isActive, setActive] = useState(false);
+  const [isActive, setActive] = useState(true);
 
   const [boardList, setboardList] = useState([]);
 
   const [sorted, setSorted] = useState(false);
 
-  const toggleClass = () => {
+  function toggleClass() {
     setActive(!isActive);
-  };
+  }
 
   const addBoard = () => {
     if (firstName === "") {
       alert("Name required");
       return 0;
-    } 
-    else if (title === "") {
+    } else if (title === "") {
       alert("Title required");
       return 0;
     }
@@ -92,6 +91,10 @@ function App() {
     return date.split("T")[0];
   };
 
+  useEffect(() => {
+    getBoards();
+  });
+
   return (
     <div>
       <BrowserRouter>
@@ -107,7 +110,7 @@ function App() {
           </Route>
           <Route path="/dashboard">
             <Navbar signedIn={true} />
-            <Dashboard isActive={isActive} toggleClass={toggleClass} />
+            <Dashboard isActive={isActive} setActive={setActive} />
           </Route>
         </Switch>
       </BrowserRouter>
@@ -194,6 +197,7 @@ function App() {
                             onClick={(e) => {
                               e.preventDefault();
                               addBoard();
+                              toggleClass();
                             }}
                           >
                             Create board
@@ -212,97 +216,50 @@ function App() {
       {/* check if we are logged in  */}
       {(window.location.href === "http://localhost:3000/dashboard") === true ? (
         <div className="App">
-          <div className="information">
-            <button
-              className="new-board-btn"
-              onClick={(e) => {
-                e.preventDefault();
-                if (isActive) toggleClass();
-              }}
-            >
-              New Board
-            </button>
-
-            {/* <label>Name:</label>
-            <input
-              type="text"
-              onChange={(event) => {
-                setName(event.target.value);
-              }}
-            />
-            <label>Age:</label>
-            <input
-              type="number"
-              onChange={(event) => {
-                // @ts-ignore
-                setAge(event.target.value);
-              }}
-            />
-            <label>Country:</label>
-            <input
-              type="text"
-              onChange={(event) => {
-                setCountry(event.target.value);
-              }}
-            />
-            <label>Position:</label>
-            <input
-              type="text"
-              onChange={(event) => {
-                setPosition(event.target.value);
-              }}
-            />
-            <label>Wage (year):</label>
-            <input
-              type="number"
-              onChange={(event) => {
-                // @ts-ignore
-                setWage(event.target.value);
-              }}
-            /> */}
-          </div>
           <hr />
           <div className="boards">
-            {/* <button onClick={getBoards}>Show Boards</button>
-
-            <button
-              className="toggle-button"
-              onClick={() => {
-                toggleSort(sorted);
-              }}
-            >
-              {sorted ? "Ascending Order ▲" : "Descending Order ▼"}
-            </button> */}
-
             {boardList.map((val, key) => {
               return (
-                <div className="board">
-                  <div>
-                    <h3>First name: {val.firstName}</h3>
-                    <h3>Last name: {val.lastName}</h3>
-                    <h3>Board title: {val.title}</h3>
-                    <h3>
-                      {val.createdByName
-                        ? `Created By: ${val.createdByName}`
-                        : null}
-                    </h3>
-                    <h3>Created: {formateDate(val.createdOn)}</h3>
-                  </div>
-                  {/* <div>
-                    <input
-                      type="text"
-                      placeholder="20000..."
-                      onChange={(event) => {
-                        // @ts-ignore
-                        setNewWage(event.target.value);
-                      }}
+                <div className="board box column is-9-desktop">
+                  <div className="board-inside">
+                    <img
+                      className="board-img"
+                      src="https://source.unsplash.com/random/175%C3%97175/?calm"
+                      alt=""
                     />
-                    <button onClick={() => updateBoardWage(val.id)}>
-                      Update
-                    </button>
 
-                    <button onClick={() => deleteBoard(val.id)}>Delete</button>
-                  </div> */}
+                    <div className="board-column">
+                      <div className="board-upper">
+                        <h1 className="board-title">{val.title}</h1>
+                        <button className="button is-info is-outlined">
+                          View
+                        </button>
+                        <hr />
+                        <div className="board-names">
+                          <h3 className="board-name-for">For</h3>
+                          <h3 className="board-name">
+                            {val.firstName} {val.lastName}
+                          </h3>
+                        </div>
+                      </div>
+                      <div className="board-lower">
+                        <div className="column sm-5 no-padding">
+                          <h3 className="board-name-grey">
+                            {val.createdByName ? `Creator` : null}
+                          </h3>
+                          <h3 className="h3-text">
+                            {val.createdByName ? val.createdByName : null}
+                          </h3>
+                        </div>
+
+                        <div className="column sm-5 no-padding">
+                          <h3 className="board-name-grey">Created</h3>
+                          <h3 className="h3-text">{formateDate(val.createdOn)}</h3>
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
                 </div>
               );
             })}

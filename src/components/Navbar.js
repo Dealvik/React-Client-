@@ -94,7 +94,7 @@ const Navbar = (props) => {
               <div className="buttons">
                 {props.signedIn === true ? (
                   <button onClick={Logout} className="button is-light">
-                    Log Out
+                    Logout
                   </button>
                 ) : null}
               </div>
