@@ -23,14 +23,14 @@ const Navbar = (props) => {
     >
       <div className="container">
         <div className="navbar-brand">
-          <a className="navbar-item" href="/">
+          {/* <a className="navbar-item" href="/">
             <img
               src="https://cdn.discordapp.com/attachments/542014173719035904/917807875940827156/poker_dude.png"
               width="28"
               height="28"
               alt="logo"
             />
-          </a>
+          </a> */}
 
           <a
             href="/"
@@ -48,7 +48,7 @@ const Navbar = (props) => {
 
         <div id="navbarBasicExample" className="navbar-menu">
           <div className="navbar-start">
-            <a href="/" className="navbar-item">
+            <a href="/dashboard" className="navbar-item">
               Home
             </a>
           </div>

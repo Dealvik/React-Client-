@@ -33,6 +33,7 @@ const Login = () => {
           <div className="columns is-centered">
             <div className="column is-4-desktop">
               <form onSubmit={Auth} className="box">
+                Log in
                 <p className="has-text-centered">{msg}</p>
                 <div className="field mt-5">
                   <label className="label">Email or Username</label>
