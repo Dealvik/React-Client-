@@ -18,6 +18,7 @@ const Navbar = (props) => {
   return (
     <nav
       className="navbar has-shadow"
+      style={{paddingTop: "5px", paddingBottom: "5px"}}
       role="navigation"
       aria-label="main navigation"
     >

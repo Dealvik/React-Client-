@@ -6,6 +6,7 @@ import Dashboard from "./components/Dashboard";
 import Login from "./components/Login";
 import Navbar from "./components/Navbar";
 import Register from "./components/Register";
+import Post from "./components/Post";
 
 function App() {
   const [firstName, setFirstName] = useState("");
@@ -13,13 +14,21 @@ function App() {
   const [title, setTitle] = useState("");
 
   const [isActive, setActive] = useState(true);
+  const [isActivePost, setIsActivePost] = useState(false);
 
+  const [postText, setPostText] = useState("");
   const [boardList, setboardList] = useState([]);
 
+  const [boardId, setBoardId] = useState(-1);
+  
   const [sorted, setSorted] = useState(false);
 
   function toggleClass() {
     setActive(!isActive);
+  }
+
+  function togglePost() {
+    setIsActivePost(!isActivePost);
   }
 
   const addBoard = () => {
@@ -35,6 +44,24 @@ function App() {
       firstName: firstName,
       lastName: lastName,
       title: title,
+    }).then(() => {
+      getBoards();
+    });
+  };
+
+  const addPost = () => {
+    if (postText === "") {
+      alert("Post text required");
+      return 0;
+    }
+    if (boardId === null) {
+      alert("board id not found")
+      return 0;
+    }
+
+    Axios.post("http://localhost:5000/createPost", {
+      postText: postText,
+      boardId: boardId
     }).then(() => {
       getBoards();
     });
@@ -93,10 +120,13 @@ function App() {
 
   useEffect(() => {
     getBoards();
-  });
+    // console.log("board id " + boardId);
+    // setBoardId(val.id);
+    console.log(boardId);
+  }, [boardId]);
 
   return (
-    <div>
+    <div className="app-container">
       <BrowserRouter>
         <Switch>
           <Route exact path="/">
@@ -114,6 +144,15 @@ function App() {
           </Route>
         </Switch>
       </BrowserRouter>
+      
+      <Post
+        // boardId={val.id}
+        isActivePost={isActivePost}
+        togglePost={togglePost}
+        setPostText={setPostText}
+        addPost={addPost}
+        boardId={boardId}
+      />
 
       <div className={isActive ? "hero-body hide" : "hero-body"}>
         <div className="container">
@@ -212,7 +251,7 @@ function App() {
           </div>
         </div>
       </div>
-
+      
       {/* check if we are logged in  */}
       {(window.location.href === "http://localhost:3000/dashboard") === true ? (
         <div className="App">
@@ -220,7 +259,10 @@ function App() {
           <div className="boards">
             {boardList.map((val, key) => {
               return (
-                <div className="board box column is-9-desktop">
+                <div
+                  className="board box column is-9-desktop"
+                  style={{ width: "100%" }}
+                >
                   <div className="board-inside">
                     <img
                       className="board-img"
@@ -254,9 +296,27 @@ function App() {
 
                         <div className="column sm-5 no-padding">
                           <h3 className="board-name-grey">Created</h3>
-                          <h3 className="h3-text">{formateDate(val.createdOn)}</h3>
+                          <h3 className="h3-text">
+                            {formateDate(val.createdOn)}
+                          </h3>
                         </div>
 
+
+                        <div className="column sm-5 no-padding">
+                        `<h3 className="board-name-grey">Posts</h3>
+                          <h3 className="h3-text">{val.postCount <= 0 ? "0" : val.postCount}</h3>
+                          <h3 className="board-name-grey">Board id</h3>
+                          <h3 className="h3-text">{val.id}</h3>
+                        </div>
+                        <button
+                          className="button is-info is-rounded"
+                          onClick={() => {
+                            if (isActivePost) setIsActivePost(false);
+                            setBoardId(val.id);
+                          }}
+                        >
+                          Add to board
+                        </button>
                       </div>
                     </div>
                   </div>
