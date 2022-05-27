@@ -7,6 +7,7 @@ import Login from "./components/Login";
 import Navbar from "./components/Navbar";
 import Register from "./components/Register";
 import Post from "./components/Post";
+import Masonry from "react-masonry-css";
 
 function App() {
   const history = useHistory();
@@ -25,7 +26,16 @@ function App() {
   const [boardId, setBoardId] = useState(-1);
 
   const [sorted, setSorted] = useState(false);
-  const [testState, setTestState] = useState("");
+  const [boardIdParam, setBoardIdParam] = useState("");
+
+  const [viewportWidth, setViewportWidth] = useState(getWindowDimensions());
+
+  function getWindowDimensions() {
+    const { innerWidth: width } = window;
+    return {
+      width,
+    };
+  }
 
   function toggleClass() {
     setActive(!isActive);
@@ -83,24 +93,25 @@ function App() {
 
   const getBoards = () => {
     Axios.get("http://localhost:5000/boards").then((response) => {
-      console.log(response);
+      // console.log(response);
       setboardList(response.data);
     });
   };
 
   const getPosts = (id) => {
     Axios.get(`http://localhost:5000/boards/${id}`).then((response) => {
-      console.log(response);
-      // setboardList(
-      //   boardList.map((val) => {
+      // console.log(response.data);
+      setPostList(response.data);
+      // setPostList(
+      //   response.data.map((val) => {
+      //     console.log(val);
       //     return val.id === id
       //       ? {
-      //           id: val.id,
-      //           name: val.name,
-      //           country: val.country,
-      //           age: val.age,
-      //           position: val.position,
-      //           wage: newWage,
+      //         id: val.id,
+      //         text: val.text,
+      //         createdBy: val.createdBy,
+      //         boardId: val.boardId,
+      //         createdOn: val.createdOn,
       //         }
       //       : val;
       //   })
@@ -143,19 +154,61 @@ function App() {
     return date.split("T")[0];
   };
 
-  const test = () => {
+  const getBoardIdParam = () => {
     const myArray = window.location.href.split("/");
-    setTestState(myArray[4]);
-    return myArray[4];
+    setBoardIdParam(myArray[4]);
+
+    return (
+      <div className="hero-body">
+        <div className="wrap">
+          <Masonry
+            breakpointCols={viewportWidth.width < 1000 ? 1 : 3}
+            className="my-masonry-grid"
+            columnClassName="my-masonry-grid_column"
+          >
+            {postList.map(function (item, i) {
+              return (
+                <div className="container">
+                  <div className="columns is-centered">
+                    <div className="column no-flex">
+                      <form onSubmit={null} className="box">
+                        <article className="message is-white">
+                          <div
+                            className="message-header"
+                            style={{ padding: "0" }}
+                          >
+                            <h1 style={{ wordBreak: "break-all" }}>
+                              {item.text}
+                            </h1>
+                          </div>
+                          <br />
+                          <h1>From {item.createdBy}</h1>
+                        </article>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </Masonry>
+        </div>
+      </div>
+    );
   };
 
   useEffect(() => {
-    getBoards();
-    // console.log("board id " + boardId);
-    // setBoardId(val.id);
-    console.log(boardId);
-    alert(testState);
-  }, [boardId, testState]);
+    const handleResize = () => {
+      setViewportWidth(getWindowDimensions());
+    };
+    window.addEventListener("resize", handleResize);
+
+    
+    if (boardIdParam !== "") {
+      getPosts(boardIdParam);
+    } else {
+      getBoards();
+    }
+  }, [boardId, boardIdParam]);
 
   return (
     <div className="app-container">
@@ -174,10 +227,7 @@ function App() {
             <Navbar signedIn={true} />
             <Dashboard isActive={isActive} setActive={setActive} />
           </Route>
-          <Route
-            path="/boards/"
-            component={test}
-          ></Route>
+          <Route path="/boards/" component={getBoardIdParam}></Route>
         </Switch>
       </BrowserRouter>
 
@@ -312,10 +362,10 @@ function App() {
                         <a href={`http://localhost:3000/boards/${val.id}`}>
                           <button
                             className="button is-info is-outlined"
-                            onClick={() => {
-                              getPosts(val.id);
-                              // history.push(`/boards/${val.id}`);
-                            }}
+                            // onClick={() => {
+                            //   getPosts(val.id);
+                            //   // history.push(`/boards/${val.id}`);
+                            // }}
                           >
                             View
                           </button>
