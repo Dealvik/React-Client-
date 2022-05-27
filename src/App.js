@@ -1,7 +1,7 @@
 import Axios from "axios";
 import "./App.css";
 import { useEffect, useState } from "react";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { BrowserRouter, Route, Switch, useHistory } from "react-router-dom";
 import Dashboard from "./components/Dashboard";
 import Login from "./components/Login";
 import Navbar from "./components/Navbar";
@@ -9,19 +9,23 @@ import Register from "./components/Register";
 import Post from "./components/Post";
 
 function App() {
+  const history = useHistory();
+
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [title, setTitle] = useState("");
 
   const [isActive, setActive] = useState(true);
-  const [isActivePost, setIsActivePost] = useState(false);
+  const [isActivePost, setIsActivePost] = useState(true);
 
   const [postText, setPostText] = useState("");
   const [boardList, setboardList] = useState([]);
+  const [postList, setPostList] = useState([]);
 
   const [boardId, setBoardId] = useState(-1);
-  
+
   const [sorted, setSorted] = useState(false);
+  const [testState, setTestState] = useState("");
 
   function toggleClass() {
     setActive(!isActive);
@@ -55,13 +59,13 @@ function App() {
       return 0;
     }
     if (boardId === null) {
-      alert("board id not found")
+      alert("board id not found");
       return 0;
     }
 
     Axios.post("http://localhost:5000/createPost", {
       postText: postText,
-      boardId: boardId
+      boardId: boardId,
     }).then(() => {
       getBoards();
     });
@@ -79,7 +83,28 @@ function App() {
 
   const getBoards = () => {
     Axios.get("http://localhost:5000/boards").then((response) => {
+      console.log(response);
       setboardList(response.data);
+    });
+  };
+
+  const getPosts = (id) => {
+    Axios.get(`http://localhost:5000/boards/${id}`).then((response) => {
+      console.log(response);
+      // setboardList(
+      //   boardList.map((val) => {
+      //     return val.id === id
+      //       ? {
+      //           id: val.id,
+      //           name: val.name,
+      //           country: val.country,
+      //           age: val.age,
+      //           position: val.position,
+      //           wage: newWage,
+      //         }
+      //       : val;
+      //   })
+      // );
     });
   };
 
@@ -118,12 +143,19 @@ function App() {
     return date.split("T")[0];
   };
 
+  const test = () => {
+    const myArray = window.location.href.split("/");
+    setTestState(myArray[4]);
+    return myArray[4];
+  };
+
   useEffect(() => {
     getBoards();
     // console.log("board id " + boardId);
     // setBoardId(val.id);
     console.log(boardId);
-  }, [boardId]);
+    alert(testState);
+  }, [boardId, testState]);
 
   return (
     <div className="app-container">
@@ -142,9 +174,13 @@ function App() {
             <Navbar signedIn={true} />
             <Dashboard isActive={isActive} setActive={setActive} />
           </Route>
+          <Route
+            path="/boards/"
+            component={test}
+          ></Route>
         </Switch>
       </BrowserRouter>
-      
+
       <Post
         // boardId={val.id}
         isActivePost={isActivePost}
@@ -251,7 +287,7 @@ function App() {
           </div>
         </div>
       </div>
-      
+
       {/* check if we are logged in  */}
       {(window.location.href === "http://localhost:3000/dashboard") === true ? (
         <div className="App">
@@ -273,9 +309,17 @@ function App() {
                     <div className="board-column">
                       <div className="board-upper">
                         <h1 className="board-title">{val.title}</h1>
-                        <button className="button is-info is-outlined">
-                          View
-                        </button>
+                        <a href={`http://localhost:3000/boards/${val.id}`}>
+                          <button
+                            className="button is-info is-outlined"
+                            onClick={() => {
+                              getPosts(val.id);
+                              // history.push(`/boards/${val.id}`);
+                            }}
+                          >
+                            View
+                          </button>
+                        </a>
                         <hr />
                         <div className="board-names">
                           <h3 className="board-name-for">For</h3>
@@ -301,10 +345,11 @@ function App() {
                           </h3>
                         </div>
 
-
                         <div className="column sm-5 no-padding">
-                        `<h3 className="board-name-grey">Posts</h3>
-                          <h3 className="h3-text">{val.postCount <= 0 ? "0" : val.postCount}</h3>
+                          <h3 className="board-name-grey">Posts</h3>
+                          <h3 className="h3-text">
+                            {val.postCount <= 0 ? "0" : val.postCount}
+                          </h3>
                           <h3 className="board-name-grey">Board id</h3>
                           <h3 className="h3-text">{val.id}</h3>
                         </div>
