@@ -8,6 +8,7 @@ import Navbar from "./components/Navbar";
 import Register from "./components/Register";
 import Post from "./components/Post";
 import Masonry from "react-masonry-css";
+import UnopDropdown from "unop-react-dropdown";
 
 function App() {
   const history = useHistory();
@@ -29,6 +30,7 @@ function App() {
   const [boardIdParam, setBoardIdParam] = useState("");
 
   const [viewportWidth, setViewportWidth] = useState(getWindowDimensions());
+  const [postDropdownActive, setPostDropdownActive] = useState(false);
 
   function getWindowDimensions() {
     const { innerWidth: width } = window;
@@ -181,8 +183,45 @@ function App() {
                               {item.text}
                             </h1>
                           </div>
-                          <br />
-                          <h1>From {item.createdBy}</h1>
+                          {/* <br /> */}
+                          <div className="post-lower">
+                            <UnopDropdown
+                              trigger={
+                                <button
+                                  onClick={() => {
+                                    setPostDropdownActive(!postDropdownActive);
+                                  }}
+                                  style={{
+                                    boxShadow: "none",
+                                    backgroundColor: "transparent",
+                                    backgroundImage: "none",
+                                    borderColor: "transparent",
+                                    cursor: "pointer",
+                                    color: "#636363",
+                                  }}
+                                >
+                                  <h1 style={{ fontSize: "28px" }}>...</h1>
+                                </button>
+                              }
+                            >
+                              <div className="dropdown">
+                                <li>
+                                  <a className="dropdown-item">
+                                    <i></i> Edit Message
+                                  </a>
+                                </li>
+                                <li>
+                                  <a className="dropdown-item">
+                                    <i></i> Delete
+                                  </a>
+                                </li>
+                              </div>
+                            </UnopDropdown>
+
+                            <h1 style={{ marginLeft: "auto" }}>
+                              From {item.createdBy}
+                            </h1>
+                          </div>
                         </article>
                       </form>
                     </div>
@@ -202,7 +241,6 @@ function App() {
     };
     window.addEventListener("resize", handleResize);
 
-    
     if (boardIdParam !== "") {
       getPosts(boardIdParam);
     } else {
