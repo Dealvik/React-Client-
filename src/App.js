@@ -32,6 +32,12 @@ function App() {
   const [viewportWidth, setViewportWidth] = useState(getWindowDimensions());
   const [postDropdownActive, setPostDropdownActive] = useState(false);
 
+  const [postEditState, setPostEditState] = useState(false);
+  const [editPostId, setEditPostId] = useState(-1);
+
+  const [textAreaEditable, setTextAreaEditable] = useState(false);
+  const [postAreaText, setPostAreaText] = useState("");
+
   function getWindowDimensions() {
     const { innerWidth: width } = window;
     return {
@@ -120,6 +126,31 @@ function App() {
       // );
     });
   };
+  const enablePost = (id) => {
+    setPostEditState(!postEditState);
+    setEditPostId(id);
+    setTextAreaEditable(!textAreaEditable);
+  };
+
+  const editPost = (id, newText) => {
+    enablePost(id);
+    // alert(id + " " + newText);
+
+    Axios.put(`http://localhost:5000/edit`, { text: newText, id: id }).then(
+      () => {
+        setPostList(
+          postList.map((val) => {
+            return val.id === id
+              ? {
+                  id: val.id,
+                  text: newText,
+                }
+              : val;
+          })
+        );
+      }
+    );
+  };
 
   // const updateBoardWage = (id) => {
   //   Axios.put("http://localhost:5000/update", { wage: newWage, id: id }).then(
@@ -152,8 +183,31 @@ function App() {
     });
   };
 
+  const deletePost = (id) => {
+    Axios.delete(`http://localhost:5000/deletePost/${id}`).then((response) => {
+      setPostList(
+        postList.filter((val) => {
+          return val.id !== id;
+        })
+      );
+    });
+  };
+
   const formateDate = (date) => {
     return date.split("T")[0];
+  };
+
+  const handleTextAreaChange = (event) => {
+    setPostAreaText(event.target.value);
+    console.log(event.target.value);
+  };
+
+  const updatePostText = (itemText) => {
+    if (postAreaText === "") {
+      return itemText;
+    } else {
+      return postAreaText;
+    }
   };
 
   const getBoardIdParam = () => {
@@ -179,11 +233,56 @@ function App() {
                             className="message-header"
                             style={{ padding: "0" }}
                           >
-                            <h1 style={{ wordBreak: "break-all" }}>
-                              {item.text}
-                            </h1>
+                            <textarea
+                              // type="text"
+                              readOnly={
+                                postEditState === true && item.id === editPostId
+                                  ? false
+                                  : true
+                              }
+                              defaultValue={updatePostText(item.text)}
+                              // readOnly={textAreaEditable ? true : false}
+                              className={
+                                postEditState === true && item.id === editPostId
+                                  ? "post-text-editable-bad"
+                                  : "post-text-editable"
+                              } 
+                              // onClick={() =>
+                              //   !textAreaEditable ? editPost(item.id) : null
+                              // }
+                              // onFocus={() => editPost(item.id)}
+                              // onFocus={handleTextAreaChange}
+                              // onBlur={handleTextAreaChange}
+                              onChange={(event) => {
+                                event.preventDefault();
+                                // handleTextAreaChange();
+                                console.log(event.target.value);
+                              }}
+                              onBlur={handleTextAreaChange}
+                            ></textarea>
                           </div>
-                          {/* <br /> */}
+
+                          <div
+                            id={item.id}
+                            className={
+                              postEditState === true && item.id === editPostId
+                                ? "post-edit"
+                                : "post-edit hidden"
+                            }
+                          >
+                            <button
+                              onClick={(event) => {
+                                event.preventDefault();
+                                editPost(item.id, postAreaText);
+                              }}
+                            >
+                              ✓
+                            </button>
+                            <button onClick={() => enablePost(item.id)}>
+                              X
+                            </button>
+                          </div>
+
                           <div className="post-lower">
                             <UnopDropdown
                               trigger={
@@ -206,13 +305,19 @@ function App() {
                             >
                               <div className="dropdown">
                                 <li>
-                                  <a className="dropdown-item">
-                                    <i></i> Edit Message
+                                  <a
+                                    className="dropdown-item"
+                                    onClick={() => enablePost(item.id)}
+                                  >
+                                    <i>Edit Message</i>
                                   </a>
                                 </li>
                                 <li>
-                                  <a className="dropdown-item">
-                                    <i></i> Delete
+                                  <a
+                                    className="dropdown-item"
+                                    onClick={() => deletePost(item.id)}
+                                  >
+                                    <i>Delete</i>
                                   </a>
                                 </li>
                               </div>
