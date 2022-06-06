@@ -137,8 +137,8 @@ function App() {
   };
 
   const commitPost = (id, newText) => {
-    Axios.put(`http://localhost:5000/edit`, { text: newText, id: id }).then(
-      () => {
+    Axios.put(`http://localhost:5000/edit`, { text: newText, id: id })
+      .then(() => {
         setPostList(
           postList.map((val) => {
             return val.id === id
@@ -149,8 +149,10 @@ function App() {
               : val;
           })
         );
-      }
-    );
+      })
+      .finally(() => {
+        cancelEdit();
+      });
   };
 
   // const updateBoardWage = (id) => {
@@ -198,7 +200,6 @@ function App() {
     return date.split("T")[0];
   };
 
-
   const getBoardIdParam = () => {
     const myArray = window.location.href.split("/");
     setBoardIdParam(myArray[4]);
@@ -217,9 +218,9 @@ function App() {
                   <div className="columns is-centered">
                     <div className="column no-flex">
                       <form onSubmit={null} className="box">
-                        <article className="newlyUpdatedText is-white">
+                        <article className="message is-white">
                           <div
-                            className="newlyUpdatedText-header"
+                            className="message-header"
                             style={{ padding: "0" }}
                           >
                             <div
@@ -233,7 +234,8 @@ function App() {
                             </div>
 
                             <textarea
-                              id={"text"+item.id}
+                              id={"text" + item.id}
+                              autoFocus={true}
                               rows={10}
                               defaultValue={item.text}
                               className={
@@ -241,13 +243,7 @@ function App() {
                                   ? "post-text-editable-visible"
                                   : "hidden"
                               }
-                              // onClick={() =>
-                              // }
-                              // onFocus={() => commitPost(item.id)}
-                              // onFocus={handleTextAreaChange}
-                              // onBlur={cancelEdit}
-                              // onChange={handleMessageChange}
-                              // onBlur={handleTextAreaChange}
+                              onBlur={cancelEdit}
                             ></textarea>
                           </div>
 
@@ -260,7 +256,7 @@ function App() {
                             }
                           >
                             <button
-                              onClick={(event) => {
+                              onMouseDown={(event) => {
                                 event.preventDefault();
                                 let textId = "text" + item.id;
                                 let newText = document.getElementById(textId);
@@ -378,7 +374,10 @@ function App() {
             <div className="column is-5-desktop">
               <form onSubmit={null} className="box">
                 <article className="newlyUpdatedText is-white">
-                  <div className="newlyUpdatedText-header" style={{ padding: "0" }}>
+                  <div
+                    className="newlyUpdatedText-header"
+                    style={{ padding: "0" }}
+                  >
                     <h2>Create new board</h2>
                     <button
                       className="delete"

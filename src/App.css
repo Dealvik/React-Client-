@@ -222,16 +222,6 @@ h3 {
   justify-content: center;
 }
 
-.wrap {
-  /* display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between; */
-}
-
-.wrap .container {
-  /* Re-order items into rows */
-}
-
 .my-masonry-grid {
   display: -webkit-box; /* Not needed if autoprefixing */
   display: -ms-flexbox; /* Not needed if autoprefixing */
@@ -249,11 +239,6 @@ h3 {
   /* change div to reference your elements you put in <Masonry> */
   /* background: grey; */
   margin-bottom: 10px;
-}
-
-.no-flex {
-  /* flex: 0 !important;
-  width: 300px !important; */
 }
 
 .post-lower {
