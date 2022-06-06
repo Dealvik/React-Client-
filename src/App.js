@@ -221,7 +221,7 @@ function App() {
                         <article className="message is-white">
                           <div
                             className="message-header"
-                            style={{ padding: "0" }}
+                            style={{ padding: "0", wordBreak: "break-all"}}
                           >
                             <div
                               className={
@@ -309,7 +309,7 @@ function App() {
                             </UnopDropdown>
 
                             <h1 style={{ marginLeft: "auto" }}>
-                              From {item.createdBy}
+                              From {item.name}
                             </h1>
                           </div>
                         </article>
@@ -507,6 +507,7 @@ function App() {
                           <h3 className="board-name">
                             {val.firstName} {val.lastName}
                           </h3>
+                          <h1>{val.name}</h1>
                         </div>
                       </div>
                       <div className="board-lower">
