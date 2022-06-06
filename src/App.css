@@ -300,19 +300,7 @@ h3 {
   display: none;
 }
 
-.post-text-editable {
-  resize: none;
-  word-break: "break-all";
-  border: 2px solid transparent;
-  background-color: transparent;
-  cursor: pointer;
-  margin: -6px -12px;
-  padding: 6px 12px;
-  white-space: pre-wrap;
-  outline: none;
-}
-
-.post-text-editable-bad {
+.post-text-editable-visible {
   resize: none;
   word-break: "break-all";
   border: 2px solid transparent;
@@ -322,4 +310,10 @@ h3 {
   padding: 6px 12px;
   white-space: pre-wrap;
   border-color: #43a6e7;
+}
+
+.post-message-visible {
+  font-size: 14px;
+  font-weight: 400;
+  word-wrap: break-word;
 }

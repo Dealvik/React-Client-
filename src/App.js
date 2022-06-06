@@ -24,7 +24,7 @@ function App() {
   const [boardList, setboardList] = useState([]);
   const [postList, setPostList] = useState([]);
 
-  const [boardId, setBoardId] = useState(-1);
+  const [boardId, setBoardId] = useState(0);
 
   const [sorted, setSorted] = useState(false);
   const [boardIdParam, setBoardIdParam] = useState("");
@@ -32,10 +32,9 @@ function App() {
   const [viewportWidth, setViewportWidth] = useState(getWindowDimensions());
   const [postDropdownActive, setPostDropdownActive] = useState(false);
 
-  const [postEditState, setPostEditState] = useState(false);
-  const [editPostId, setEditPostId] = useState(-1);
+  const [editPostId, setEditPostId] = useState(0);
+  const [newlyUpdatedText, setNewlyUpdatedText] = useState("");
 
-  const [textAreaEditable, setTextAreaEditable] = useState(false);
   const [postAreaText, setPostAreaText] = useState("");
 
   function getWindowDimensions() {
@@ -126,16 +125,18 @@ function App() {
       // );
     });
   };
-  const enablePost = (id) => {
-    setPostEditState(!postEditState);
-    setEditPostId(id);
-    setTextAreaEditable(!textAreaEditable);
+
+  const cancelEdit = () => {
+    setEditPostId(0);
+    setPostAreaText("");
   };
 
-  const editPost = (id, newText) => {
-    enablePost(id);
-    // alert(id + " " + newText);
+  const editPost = (id, text) => {
+    setEditPostId(id);
+    setPostAreaText(text);
+  };
 
+  const commitPost = (id, newText) => {
     Axios.put(`http://localhost:5000/edit`, { text: newText, id: id }).then(
       () => {
         setPostList(
@@ -197,18 +198,6 @@ function App() {
     return date.split("T")[0];
   };
 
-  const handleTextAreaChange = (event) => {
-    setPostAreaText(event.target.value);
-    console.log(event.target.value);
-  };
-
-  const updatePostText = (itemText) => {
-    if (postAreaText === "") {
-      return itemText;
-    } else {
-      return postAreaText;
-    }
-  };
 
   const getBoardIdParam = () => {
     const myArray = window.location.href.split("/");
@@ -228,44 +217,44 @@ function App() {
                   <div className="columns is-centered">
                     <div className="column no-flex">
                       <form onSubmit={null} className="box">
-                        <article className="message is-white">
+                        <article className="newlyUpdatedText is-white">
                           <div
-                            className="message-header"
+                            className="newlyUpdatedText-header"
                             style={{ padding: "0" }}
                           >
-                            <textarea
-                              // type="text"
-                              readOnly={
-                                postEditState === true && item.id === editPostId
-                                  ? false
-                                  : true
-                              }
-                              defaultValue={updatePostText(item.text)}
-                              // readOnly={textAreaEditable ? true : false}
+                            <div
                               className={
-                                postEditState === true && item.id === editPostId
-                                  ? "post-text-editable-bad"
-                                  : "post-text-editable"
-                              } 
+                                item.id === editPostId
+                                  ? "hidden"
+                                  : "post-message-visible"
+                              }
+                            >
+                              {item.text}
+                            </div>
+
+                            <textarea
+                              id={"text"+item.id}
+                              rows={10}
+                              defaultValue={item.text}
+                              className={
+                                item.id === editPostId
+                                  ? "post-text-editable-visible"
+                                  : "hidden"
+                              }
                               // onClick={() =>
-                              //   !textAreaEditable ? editPost(item.id) : null
                               // }
-                              // onFocus={() => editPost(item.id)}
+                              // onFocus={() => commitPost(item.id)}
                               // onFocus={handleTextAreaChange}
+                              // onBlur={cancelEdit}
+                              // onChange={handleMessageChange}
                               // onBlur={handleTextAreaChange}
-                              onChange={(event) => {
-                                event.preventDefault();
-                                // handleTextAreaChange();
-                                console.log(event.target.value);
-                              }}
-                              onBlur={handleTextAreaChange}
                             ></textarea>
                           </div>
 
                           <div
                             id={item.id}
                             className={
-                              postEditState === true && item.id === editPostId
+                              item.id === editPostId
                                 ? "post-edit"
                                 : "post-edit hidden"
                             }
@@ -273,14 +262,14 @@ function App() {
                             <button
                               onClick={(event) => {
                                 event.preventDefault();
-                                editPost(item.id, postAreaText);
+                                let textId = "text" + item.id;
+                                let newText = document.getElementById(textId);
+                                commitPost(item.id, newText.value);
                               }}
                             >
                               ✓
                             </button>
-                            <button onClick={() => enablePost(item.id)}>
-                              X
-                            </button>
+                            <button onClick={() => cancelEdit()}>X</button>
                           </div>
 
                           <div className="post-lower">
@@ -307,7 +296,7 @@ function App() {
                                 <li>
                                   <a
                                     className="dropdown-item"
-                                    onClick={() => enablePost(item.id)}
+                                    onClick={() => editPost(item.id, item.text)}
                                   >
                                     <i>Edit Message</i>
                                   </a>
@@ -388,8 +377,8 @@ function App() {
           <div className="columns is-centered">
             <div className="column is-5-desktop">
               <form onSubmit={null} className="box">
-                <article className="message is-white">
-                  <div className="message-header" style={{ padding: "0" }}>
+                <article className="newlyUpdatedText is-white">
+                  <div className="newlyUpdatedText-header" style={{ padding: "0" }}>
                     <h2>Create new board</h2>
                     <button
                       className="delete"
