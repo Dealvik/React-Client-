@@ -302,3 +302,22 @@ h3 {
   font-weight: 400;
   word-wrap: break-word;
 }
+
+.banner {
+  width: 100% !important;
+  height: 150px;
+  background: #ee3350;
+  text-align: center;
+  margin-top: 75px;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  align-content: center;
+  flex-direction: column;
+  
+}
+
+.banner-content {
+  text-align: center;
+}

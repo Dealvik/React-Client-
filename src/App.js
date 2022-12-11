@@ -9,6 +9,7 @@ import Register from "./components/Register";
 import Post from "./components/Post";
 import Masonry from "react-masonry-css";
 import UnopDropdown from "unop-react-dropdown";
+import React from "react";
 
 function App() {
   const history = useHistory();
@@ -36,6 +37,11 @@ function App() {
   const [newlyUpdatedText, setNewlyUpdatedText] = useState("");
 
   const [postAreaText, setPostAreaText] = useState("");
+
+  //images
+  const [file, setFile] = useState('');
+  const [filename, setFilename] = useState('Choose File');
+  const [uploadedFile, setUploadedFile] = useState({});
 
   function getWindowDimensions() {
     const { innerWidth: width } = window;
@@ -83,6 +89,7 @@ function App() {
     Axios.post("http://localhost:5000/createPost", {
       postText: postText,
       boardId: boardId,
+      file: file
     }).then(() => {
       getBoards();
     });
@@ -205,126 +212,148 @@ function App() {
     setBoardIdParam(myArray[4]);
 
     return (
-      <div className="hero-body">
-        <div className="wrap">
-          <Masonry
-            breakpointCols={viewportWidth.width < 1000 ? 1 : 3}
-            className="my-masonry-grid"
-            columnClassName="my-masonry-grid_column"
+      <div>
+        <div className="banner">
+          <div className="banner-content">
+            Board title here
+          </div>
+        </div>
+
+        <button
+            className="button is-info is-rounded"
+            onClick={() => {
+              if (isActivePost) setIsActivePost(false);
+              // setBoardId(val.id);
+            }}
           >
-            {postList.map(function (item, i) {
-              return (
-                <div className="container">
-                  <div className="columns is-centered">
-                    <div className="column no-flex">
-                      <form onSubmit={null} className="box">
-                        <article className="message is-white">
-                          <div
-                            className="message-header"
-                            style={{ padding: "0", wordBreak: "break-all"}}
-                          >
+            Add to boardsdsd
+          </button>
+
+        <div className="hero-body">
+          <div className="wrap">
+            <Masonry
+              breakpointCols={viewportWidth.width < 1000 ? 1 : 3}
+              className="my-masonry-grid"
+              columnClassName="my-masonry-grid_column"
+            >
+              {postList.map(function (item, i) {
+                return (
+                  <div className="container">
+                    <div className="columns is-centered">
+                      <div className="column no-flex">
+                        <form onSubmit={null} className="box">
+                          <article className="message is-white">
                             <div
-                              className={
-                                item.id === editPostId
-                                  ? "hidden"
-                                  : "post-message-visible"
-                              }
+                              className="message-header"
+                              style={{ padding: "0", wordBreak: "break-all" }}
                             >
-                              {item.text}
+                              <div
+                                className={
+                                  item.id === editPostId
+                                    ? "hidden"
+                                    : "post-message-visible"
+                                }
+                              >
+                                {item.text}
+                              </div>
+
+                              <textarea
+                                id={"text" + item.id}
+                                autoFocus={true}
+                                rows={10}
+                                defaultValue={item.text}
+                                className={
+                                  item.id === editPostId
+                                    ? "post-text-editable-visible"
+                                    : "hidden"
+                                }
+                                onBlur={cancelEdit}
+                              ></textarea>
                             </div>
 
-                            <textarea
-                              id={"text" + item.id}
-                              autoFocus={true}
-                              rows={10}
-                              defaultValue={item.text}
+                            <div
+                              id={item.id}
                               className={
                                 item.id === editPostId
-                                  ? "post-text-editable-visible"
-                                  : "hidden"
-                              }
-                              onBlur={cancelEdit}
-                            ></textarea>
-                          </div>
-
-                          <div
-                            id={item.id}
-                            className={
-                              item.id === editPostId
-                                ? "post-edit"
-                                : "post-edit hidden"
-                            }
-                          >
-                            <button
-                              onMouseDown={(event) => {
-                                event.preventDefault();
-                                let textId = "text" + item.id;
-                                let newText = document.getElementById(textId);
-                                commitPost(item.id, newText.value);
-                              }}
-                            >
-                              ✓
-                            </button>
-                            <button onClick={() => cancelEdit()}>X</button>
-                          </div>
-
-                          <div className="post-lower">
-                            <UnopDropdown
-                              trigger={
-                                <button
-                                  onClick={() => {
-                                    setPostDropdownActive(!postDropdownActive);
-                                  }}
-                                  style={{
-                                    boxShadow: "none",
-                                    backgroundColor: "transparent",
-                                    backgroundImage: "none",
-                                    borderColor: "transparent",
-                                    cursor: "pointer",
-                                    color: "#636363",
-                                  }}
-                                >
-                                  <h1 style={{ fontSize: "28px" }}>...</h1>
-                                </button>
+                                  ? "post-edit"
+                                  : "post-edit hidden"
                               }
                             >
-                              <div className="dropdown">
-                                <li>
-                                  <a
-                                    className="dropdown-item"
-                                    onClick={() => editPost(item.id, item.text)}
-                                  >
-                                    <i>Edit Message</i>
-                                  </a>
-                                </li>
-                                <li>
-                                  <a
-                                    className="dropdown-item"
-                                    onClick={() => deletePost(item.id)}
-                                  >
-                                    <i>Delete</i>
-                                  </a>
-                                </li>
-                              </div>
-                            </UnopDropdown>
+                              <button
+                                onMouseDown={(event) => {
+                                  event.preventDefault();
+                                  let textId = "text" + item.id;
+                                  let newText = document.getElementById(textId);
+                                  commitPost(item.id, newText.value);
+                                }}
+                              >
+                                ✓
+                              </button>
+                              <button onClick={() => cancelEdit()}>X</button>
+                            </div>
 
-                            <h1 style={{ marginLeft: "auto" }}>
-                              From {item.name}
-                            </h1>
-                          </div>
-                        </article>
-                      </form>
+                            <div className="post-lower">
+                              <UnopDropdown
+                                trigger={
+                                  <button
+                                    onClick={() => {
+                                      setPostDropdownActive(
+                                        !postDropdownActive
+                                      );
+                                    }}
+                                    style={{
+                                      boxShadow: "none",
+                                      backgroundColor: "transparent",
+                                      backgroundImage: "none",
+                                      borderColor: "transparent",
+                                      cursor: "pointer",
+                                      color: "#636363",
+                                    }}
+                                  >
+                                    <h1 style={{ fontSize: "28px" }}>...</h1>
+                                  </button>
+                                }
+                              >
+                                <div className="dropdown">
+                                  <li>
+                                    <a
+                                      className="dropdown-item"
+                                      onClick={() =>
+                                        editPost(item.id, item.text)
+                                      }
+                                    >
+                                      <i>Edit Message</i>
+                                    </a>
+                                  </li>
+                                  <li>
+                                    <a
+                                      className="dropdown-item"
+                                      onClick={() => deletePost(item.id)}
+                                    >
+                                      <i>Delete</i>
+                                    </a>
+                                  </li>
+                                </div>
+                              </UnopDropdown>
+
+                              <h1 style={{ marginLeft: "auto" }}>
+                                From {item.name}
+                              </h1>
+                            </div>
+                          </article>
+                        </form>
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </Masonry>
+                );
+              })}
+            </Masonry>
+          </div>
         </div>
       </div>
     );
   };
-
+  
   useEffect(() => {
     const handleResize = () => {
       setViewportWidth(getWindowDimensions());
@@ -363,11 +392,14 @@ function App() {
         // boardId={val.id}
         isActivePost={isActivePost}
         togglePost={togglePost}
+        getBoards={getBoards}
         setPostText={setPostText}
+        setFile={setFile}
+        setFilename={setFilename}
         addPost={addPost}
         boardId={boardId}
       />
-
+      
       <div className={isActive ? "hero-body hide" : "hero-body"}>
         <div className="container">
           <div className="columns is-centered">
@@ -507,7 +539,7 @@ function App() {
                           <h3 className="board-name">
                             {val.firstName} {val.lastName}
                           </h3>
-                          <h1>{val.name}</h1>
+                          {/* <h1>{val.name}</h1> */}
                         </div>
                       </div>
                       <div className="board-lower">
@@ -538,6 +570,7 @@ function App() {
                         <button
                           className="button is-info is-rounded"
                           onClick={() => {
+                            // alert(val.id);
                             if (isActivePost) setIsActivePost(false);
                             setBoardId(val.id);
                           }}
