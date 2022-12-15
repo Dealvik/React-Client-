@@ -256,7 +256,9 @@ function App() {
                               >
                                 {item.text}
                               </div>
-
+                              {item.imageId !== null ? 
+                              <img src={"http://localhost:5000/images/"+item.imageId+"."+item.imageType} alt="test" width="300" height="300" /> : null}
+                              
                               <textarea
                                 id={"text" + item.id}
                                 autoFocus={true}
