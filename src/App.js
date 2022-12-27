@@ -158,30 +158,10 @@ function App() {
         );
       })
       .finally(() => {
-        cancelEdit();
+        // cancelEdit();
+        window.location.reload();
       });
   };
-
-  // const updateBoardWage = (id) => {
-  //   Axios.put("http://localhost:5000/update", { wage: newWage, id: id }).then(
-  //     () => {
-  //       setboardList(
-  //         boardList.map((val) => {
-  //           return val.id === id
-  //             ? {
-  //                 id: val.id,
-  //                 name: val.name,
-  //                 country: val.country,
-  //                 age: val.age,
-  //                 position: val.position,
-  //                 wage: newWage,
-  //               }
-  //             : val;
-  //         })
-  //       );
-  //     }
-  //   );
-  // };
 
   const deleteBoard = (id) => {
     Axios.delete(`http://localhost:5000/delete/${id}`).then((response) => {
@@ -211,15 +191,34 @@ function App() {
     const myArray = window.location.href.split("/");
     setBoardIdParam(myArray[4]);
 
+  const handlePostChange = (postId, newText) => {
+    // let textId = "text" + postId.id;
+    // let newText = document.getElementById(textId);
+    // console.log("id is " + postId + ", new text is " + newText);
+    commitPost(postId, newText);
+  }
+
+  const toggleCss = (id) => {
+    $('#text' + id).toggleClass("activePost");
+    if ($('#text' + id).attr('contenteditable', 'false')) {
+      $('#text' + id).attr('contenteditable', 'true');
+    } else {
+      $('#text' + id).attr('contenteditable', 'false');
+    }
+
+    // make the icons appear
+    $('#text' + id + "icons").toggleClass("hidden");
+  }
+
     return (
       <div>
-        <div className="banner">
+        {/* <div className="banner">
           <div className="banner-content">
             Board title here
           </div>
-        </div>
+        </div> */}
 
-        <button
+        {/* <button
             className="button is-info is-rounded"
             onClick={() => {
               if (isActivePost) setIsActivePost(false);
@@ -227,7 +226,7 @@ function App() {
             }}
           >
             Add to boardsdsd
-          </button>
+          </button> */}
 
         <div className="hero-body">
           <div className="wrap">
@@ -247,17 +246,45 @@ function App() {
                               className="message-header"
                               style={{ padding: "0", wordBreak: "break-all" }}
                             >
+
+                            <div style={{
+                              display: "flex",
+                              boxShadow: "none",
+                              flexDirection: "column", 
+                              justifyContent: "center"
+                            }}>
+
+                              {/* image display */}
+                              {item.imageId !== null ? 
+                              <img src={"http://localhost:5000/images/"+item.imageId+"."+item.imageType} alt="test" /> : null}
+                              
+                              {/* the main div that displays the post text */}
                               <div
-                                className={
-                                  item.id === editPostId
-                                    ? "hidden"
-                                    : "post-message-visible"
-                                }
+                                role={"textbox"}
+                                id={"text" + item.id}
+                                onClick={e => {
+                                  toggleCss(item.id);
+                                }}
+                                onBlur={e => {
+                                  // toggleCss(item.id);
+                                }}
+                                tabIndex={1}
+                                contentEditable={true}
+                                onInput={(e) => { 
+                                  // handlePostChange(item.id, e.currentTarget.textContent);
+                                  console.log(e.currentTarget.textContent);
+                                }}
+                                suppressContentEditableWarning={true}
+                                style={{marginTop: "25px", padding: "15px", paddingLeft: "10px"}}
+                                // className={
+                                //   item.id === editPostId
+                                //     ? "hidden"
+                                //     : "post-message-visible"
+                                // }
                               >
                                 {item.text}
                               </div>
-                              {item.imageId !== null ? 
-                              <img src={"http://localhost:5000/images/"+item.imageId+"."+item.imageType} alt="test" width="300" height="300" /> : null}
+                              </div>
                               
                               <textarea
                                 id={"text" + item.id}
@@ -266,32 +293,41 @@ function App() {
                                 defaultValue={item.text}
                                 className={
                                   item.id === editPostId
-                                    ? "post-text-editable-visible"
+                                    ? "post-text-editable-visiblse"
                                     : "hidden"
                                 }
                                 onBlur={cancelEdit}
                               ></textarea>
-                            </div>
-
+                              </div>
+                            
+                            {/* these are the buttons (checkmark and X) */}
                             <div
-                              id={item.id}
+                              id={"text" + item.id + "icons"}
                               className={
-                                item.id === editPostId
-                                  ? "post-edit"
-                                  : "post-edit hidden"
+                                "hidden"
+                                // item.id === editPostId
+                                //   ? "post-edit"
+                                //   : "post-edit hidden"
                               }
+                              style={{
+                                float: "right"
+                              }}
                             >
                               <button
-                                onMouseDown={(event) => {
-                                  event.preventDefault();
-                                  let textId = "text" + item.id;
-                                  let newText = document.getElementById(textId);
-                                  commitPost(item.id, newText.value);
+                                onMouseDown={(e) => {
+                                  console.log(item.id, e.currentTarget.textContent);
+                                  handlePostChange(item.id, e.currentTarget.textContent);
+                                  
+                                  commitPost(item.id, e.currentTarget.textContent);
+                                  toggleCss(item.id);
+                                  // let textId = "text" + item.id;
+                                  // let newText = document.getElementById(textId);
+                                  // commitPost(item.id, newText.value);
                                 }}
                               >
-                                ✓
+                                <FaCheck />
                               </button>
-                              <button onClick={() => cancelEdit()}>X</button>
+                              <button onClick={() => cancelEdit()}><FaTimes /></button>
                             </div>
 
                             <div className="post-lower">
@@ -370,7 +406,7 @@ function App() {
   }, [boardId, boardIdParam]);
 
   return (
-    <div className="app-container">
+    <div className="app-container" style={{background: "#fbfbfb"}}>
       <BrowserRouter>
         <Switch>
           <Route exact path="/">
