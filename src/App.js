@@ -10,6 +10,7 @@ import Post from "./components/Post";
 import Masonry from "react-masonry-css";
 import UnopDropdown from "unop-react-dropdown";
 import React from "react";
+import $ from 'jquery';
 
 function App() {
   const history = useHistory();
@@ -325,9 +326,10 @@ function App() {
                                   // commitPost(item.id, newText.value);
                                 }}
                               >
-                                <FaCheck />
+                              ✓
+                                {/* <FaCheck /> */}
                               </button>
-                              <button onClick={() => cancelEdit()}><FaTimes /></button>
+                              <button onClick={() => cancelEdit()}>X</button>
                             </div>
 
                             <div className="post-lower">
