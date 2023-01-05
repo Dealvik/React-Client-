@@ -10,9 +10,9 @@ import Post from "./components/Post";
 import Masonry from "react-masonry-css";
 import UnopDropdown from "unop-react-dropdown";
 import React from "react";
-import $ from 'jquery';
 
 function App() {
+  // @ts-ignore
   const history = useHistory();
 
   const [firstName, setFirstName] = useState("");
@@ -22,12 +22,15 @@ function App() {
   const [isActive, setActive] = useState(true);
   const [isActivePost, setIsActivePost] = useState(true);
 
+  const [postId, setPostId] = useState("");
+
   const [postText, setPostText] = useState("");
   const [boardList, setboardList] = useState([]);
   const [postList, setPostList] = useState([]);
 
   const [boardId, setBoardId] = useState(0);
 
+  // @ts-ignore
   const [sorted, setSorted] = useState(false);
   const [boardIdParam, setBoardIdParam] = useState("");
 
@@ -35,13 +38,16 @@ function App() {
   const [postDropdownActive, setPostDropdownActive] = useState(false);
 
   const [editPostId, setEditPostId] = useState(0);
+  // @ts-ignore
   const [newlyUpdatedText, setNewlyUpdatedText] = useState("");
 
+  // @ts-ignore
   const [postAreaText, setPostAreaText] = useState("");
 
   //images
   const [file, setFile] = useState('');
   const [filename, setFilename] = useState('Choose File');
+  // @ts-ignore
   const [uploadedFile, setUploadedFile] = useState({});
 
   function getWindowDimensions() {
@@ -96,6 +102,7 @@ function App() {
     });
   };
 
+  // @ts-ignore
   const toggleSort = (sorted) => {
     Axios.get("http://localhost:5000/boardsSorted?order=" + sorted).then(
       (response) => {
@@ -144,13 +151,20 @@ function App() {
     setPostAreaText(text);
   };
 
+  function addMedia(postId) {
+    setPostId(postId);
+  }
+
   const commitPost = (id, newText) => {
     Axios.put(`http://localhost:5000/edit`, { text: newText, id: id })
       .then(() => {
         setPostList(
+          // @ts-ignore
           postList.map((val) => {
+            // @ts-ignore
             return val.id === id
               ? {
+                  // @ts-ignore
                   id: val.id,
                   text: newText,
                 }
@@ -159,15 +173,47 @@ function App() {
         );
       })
       .finally(() => {
-        // cancelEdit();
+        cancelEdit();
         window.location.reload();
       });
   };
 
+  // const updateBoardWage = (id) => {
+  //   Axios.put("http://localhost:5000/update", { wage: newWage, id: id }).then(
+  //     () => {
+  //       setboardList(
+  //         boardList.map((val) => {
+  //           return val.id === id
+  //             ? {
+  //                 id: val.id,
+  //                 name: val.name,
+  //                 country: val.country,
+  //                 age: val.age,
+  //                 position: val.position,
+  //                 wage: newWage,
+  //               }
+  //             : val;
+  //         })
+  //       );
+  //     }
+  //   );
+  // };
+  const onChangeFile = (e) => {
+      setFile(e.target.files[0]);
+      // setFilename(e.target.files[0].name);
+      setFilename(e.target.files[0].name);
+      // props.setFile(e.target.files[0]);
+      // props.setFilename(e.target.files[0].name);
+      // props.setFilename(e.target.files[0].name);
+  };
+
+  // @ts-ignore
   const deleteBoard = (id) => {
+    // @ts-ignore
     Axios.delete(`http://localhost:5000/delete/${id}`).then((response) => {
       setboardList(
         boardList.filter((val) => {
+          // @ts-ignore
           return val.id !== id;
         })
       );
@@ -175,14 +221,55 @@ function App() {
   };
 
   const deletePost = (id) => {
+    // @ts-ignore
     Axios.delete(`http://localhost:5000/deletePost/${id}`).then((response) => {
       setPostList(
         postList.filter((val) => {
+          // @ts-ignore
           return val.id !== id;
         })
       );
     });
   };
+
+  async function onSubmit(e) {
+    e.preventDefault();    
+    const formData = new FormData();
+    formData.append('file', file);
+    // formData.append('postText', postText);
+    // @ts-ignore
+    formData.append('postId', postId); 
+
+    try {
+      const res = await Axios.post('http://localhost:5000/uploadImage', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        // @ts-ignore
+        onUploadProgress: progressEvent => {
+          var percentCompleted = Math.round( (progressEvent.loaded * 100) / progressEvent.total );
+          console.log(percentCompleted);
+
+          if (percentCompleted >= 100) {
+            setPostId("");
+          } 
+          // setUploadPercentage(parseInt(Math.round((progressEvent.loaded * 100) / progressEvent.total)));
+          // setTimeout(() => setUploadPercentage(0), 10000);
+        }
+      })
+
+      const { fileName, filePath } = res.data;
+      setUploadedFile({ fileName, filePath });
+      // setMessage('File uploaded');
+
+    } catch(err) {
+      if(err.response.status === 500) {
+        // setMessage('There was a problem with the server');
+      } else {
+        // setMessage(err.response.data.msg);
+      }
+    }
+  }
 
   const formateDate = (date) => {
     return date.split("T")[0];
@@ -192,33 +279,92 @@ function App() {
     const myArray = window.location.href.split("/");
     setBoardIdParam(myArray[4]);
 
-  const handlePostChange = (postId, newText) => {
-    // let textId = "text" + postId.id;
-    // let newText = document.getElementById(textId);
-    // console.log("id is " + postId + ", new text is " + newText);
-    commitPost(postId, newText);
-  }
-
-  const toggleCss = (id) => {
-    $('#text' + id).toggleClass("activePost");
-    if ($('#text' + id).attr('contenteditable', 'false')) {
-      $('#text' + id).attr('contenteditable', 'true');
-    } else {
-      $('#text' + id).attr('contenteditable', 'false');
-    }
-
-    // make the icons appear
-    $('#text' + id + "icons").toggleClass("hidden");
-  }
-
     return (
       <div>
-        {/* <div className="banner">
-          <div className="banner-content">
-            Board title here
+         <div className="banner">
+            <div className="banner-content">
+              {boardList.map((val, 
+// @ts-ignore
+              key) => {
+                return (
+                  <div className="board-inside">
+                    <div className="board-column">
+                      <div className="board-upper">
+                        {(window.location.href === ("http://localhost:3000/boards/" + val
+// @ts-ignore
+                        .boardId)) ? (
+                        <h1 className="board-title">{val
+// @ts-ignore
+                        .title}</h1>) : null}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div> */}
+          
+          {/* add media option */}
+          {(postId !== "" ? <div className="mask">
+          <form onSubmit={onSubmit} className="box">
+          <article className="message is-white">
+          <div className="message-header" style={{ padding: "0" }}>
+          <button type="submit">Submit</button>
+              <h2>Add media for post {}</h2>
+              {/* delete button */}
+              <button
+                className="delete"
+                onClick={(e) => {
+                  e.preventDefault();
+                  // console.log(props.isActivePost);
+                  setPostId("");
+                }}
+              ></button>
+            </div>
+            
+            <div className="custom-file mb-4">
+              <input
+                type="file"
+                className="custom-file-input"
+                id="customFile"
+                onChange={onChangeFile}
+                // multiple
+              />
+              <label className='custom-file-label' htmlFor='customFile'>
+                {filename}
+              </label>
+            </div>
+          </article>
 
+          <p className="has-text-centered">{null}</p>
+          <div className="field is-hotizontal mt-5">
+
+          {/* Upload button */}
+          <div className="field mt-4">
+            <div className="field-body">
+              <div className="field">
+                <div className="control is-expanded">
+                  <input
+                    type="submit"
+                    value="Upload"
+                    className="button is-fullwidth is-primary"
+                    // @ts-ignore
+                    onClick={(e) => {
+                      // e.preventDefault();
+                      // todo start spining
+                      // text uploading
+                    }}
+                  >
+                  </input>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+      </div> : null)}
+          
+        
         {/* <button
             className="button is-info is-rounded"
             onClick={() => {
@@ -228,106 +374,87 @@ function App() {
           >
             Add to boardsdsd
           </button> */}
-
-        <div className="hero-body">
+        
+        <div className="hero-body hello">
           <div className="wrap">
             <Masonry
               breakpointCols={viewportWidth.width < 1000 ? 1 : 3}
               className="my-masonry-grid"
               columnClassName="my-masonry-grid_column"
             >
-              {postList.map(function (item, i) {
+              {postList.map(function (item, 
+// @ts-ignore
+              i) {
                 return (
                   <div className="container">
                     <div className="columns is-centered">
                       <div className="column no-flex">
-                        <form onSubmit={null} className="box">
+                        <form 
+// @ts-ignore
+                        onSubmit={null} className="box">
                           <article className="message is-white">
                             <div
                               className="message-header"
-                              style={{ padding: "0", wordBreak: "break-all" }}
+                              style={{ padding: "0", wordBreak: "break-all", display: "flex", flexDirection: "column", }}
                             >
-
-                            <div style={{
-                              display: "flex",
-                              boxShadow: "none",
-                              flexDirection: "column", 
-                              justifyContent: "center"
-                            }}>
-
-                              {/* image display */}
-                              {item.imageId !== null ? 
-                              <img src={"http://localhost:5000/images/"+item.imageId+"."+item.imageType} alt="test" /> : null}
+                              {/* images inserted here */}
+                              {item
+// @ts-ignore
+                              .imageId !== null ? 
+                              // @ts-ignore
+                              <img style={{marginBottom: "20px"}} src={"http://localhost:5000/images/"+item.imageId+"."+item.imageType} alt="test" width="300" height="300" /> : null}
                               
-                              {/* the main div that displays the post text */}
                               <div
-                                role={"textbox"}
-                                id={"text" + item.id}
-                                onClick={e => {
-                                  toggleCss(item.id);
-                                }}
-                                onBlur={e => {
-                                  // toggleCss(item.id);
-                                }}
-                                tabIndex={1}
-                                contentEditable={true}
-                                onInput={(e) => { 
-                                  // handlePostChange(item.id, e.currentTarget.textContent);
-                                  console.log(e.currentTarget.textContent);
-                                }}
-                                suppressContentEditableWarning={true}
-                                style={{marginTop: "25px", padding: "15px", paddingLeft: "10px"}}
-                                // className={
-                                //   item.id === editPostId
-                                //     ? "hidden"
-                                //     : "post-message-visible"
-                                // }
+                                className={
+                                  // @ts-ignore
+                                  item.id === editPostId
+                                    ? "hidden"
+                                    : "post-message-visible"
+                                }
                               >
-                                {item.text}
+                                {item
+// @ts-ignore
+                                .text}
                               </div>
-                              </div>
-                              
+
                               <textarea
+                                // @ts-ignore
                                 id={"text" + item.id}
                                 autoFocus={true}
                                 rows={10}
+                                // @ts-ignore
                                 defaultValue={item.text}
                                 className={
+                                  // @ts-ignore
                                   item.id === editPostId
-                                    ? "post-text-editable-visiblse"
+                                    ? "post-text-editable-visible"
                                     : "hidden"
                                 }
                                 onBlur={cancelEdit}
                               ></textarea>
-                              </div>
-                            
-                            {/* these are the buttons (checkmark and X) */}
+                            </div>
+
                             <div
-                              id={"text" + item.id + "icons"}
+                              // @ts-ignore
+                              id={item.id}
                               className={
-                                "hidden"
-                                // item.id === editPostId
-                                //   ? "post-edit"
-                                //   : "post-edit hidden"
+                                // @ts-ignore
+                                item.id === editPostId
+                                  ? "post-edit"
+                                  : "post-edit hidden"
                               }
-                              style={{
-                                float: "right"
-                              }}
                             >
                               <button
-                                onMouseDown={(e) => {
-                                  console.log(item.id, e.currentTarget.textContent);
-                                  handlePostChange(item.id, e.currentTarget.textContent);
-                                  
-                                  commitPost(item.id, e.currentTarget.textContent);
-                                  toggleCss(item.id);
-                                  // let textId = "text" + item.id;
-                                  // let newText = document.getElementById(textId);
-                                  // commitPost(item.id, newText.value);
+                                onMouseDown={(event) => {
+                                  event.preventDefault();
+                                  // @ts-ignore
+                                  let textId = "text" + item.id;
+                                  let newText = document.getElementById(textId);
+                                  // @ts-ignore
+                                  commitPost(item.id, newText.value);
                                 }}
                               >
-                              ✓
-                                {/* <FaCheck /> */}
+                                ✓
                               </button>
                               <button onClick={() => cancelEdit()}>X</button>
                             </div>
@@ -354,30 +481,48 @@ function App() {
                                   </button>
                                 }
                               >
+                              
                                 <div className="dropdown">
                                   <li>
+                                    {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                                     <a
                                       className="dropdown-item"
                                       onClick={() =>
+                                        // @ts-ignore
                                         editPost(item.id, item.text)
                                       }
                                     >
-                                      <i>Edit Message</i>
+                                      Edit message
+                                    </a>
+                                  </li>
+                                  <li>
+                                    {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                                    <a
+                                      className="dropdown-item"
+                                      onClick={() => {
+                                        // @ts-ignore
+                                        addMedia(item.id)
+                                      }}
+                                    >
+                                      Add media
                                     </a>
                                   </li>
                                   <li>
                                     <a
                                       className="dropdown-item"
+                                      // @ts-ignore
                                       onClick={() => deletePost(item.id)}
                                     >
-                                      <i>Delete</i>
+                                      Delete
                                     </a>
                                   </li>
                                 </div>
                               </UnopDropdown>
 
                               <h1 style={{ marginLeft: "auto" }}>
-                                From {item.name}
+                                From {item
+// @ts-ignore
+                                .name}
                               </h1>
                             </div>
                           </article>
@@ -408,224 +553,247 @@ function App() {
   }, [boardId, boardIdParam]);
 
   return (
-    <div className="app-container" style={{background: "#fbfbfb"}}>
-      <BrowserRouter>
-        <Switch>
-          <Route exact path="/">
-            <Login />
-          </Route>
-          <Route path="/login">
-            <Login />
-          </Route>
-          <Route path="/register">
-            <Register />
-          </Route>
-          <Route path="/dashboard">
-            <Navbar signedIn={true} />
-            <Dashboard isActive={isActive} setActive={setActive} />
-          </Route>
-          <Route path="/boards/" component={getBoardIdParam}></Route>
-        </Switch>
-      </BrowserRouter>
+    <div>
+     
+      <div className="app-container">
+        <BrowserRouter>
+          <Switch>
+            <Route exact path="/">
+              <Login />
+            </Route>
+            <Route path="/login">
+              <Login />
+            </Route>
+            <Route path="/register">
+              <Register />
+            </Route>
+            <Route path="/dashboard">
+              <Navbar signedIn={true} />
+              <Dashboard isActive={isActive} setActive={setActive} />
+            </Route>
+            <Route path="/boards/" component={getBoardIdParam}></Route>
+          </Switch>
+        </BrowserRouter>
 
-      <Post
-        // boardId={val.id}
-        isActivePost={isActivePost}
-        togglePost={togglePost}
-        getBoards={getBoards}
-        setPostText={setPostText}
-        setFile={setFile}
-        setFilename={setFilename}
-        addPost={addPost}
-        boardId={boardId}
-      />
-      
-      <div className={isActive ? "hero-body hide" : "hero-body"}>
-        <div className="container">
-          <div className="columns is-centered">
-            <div className="column is-5-desktop">
-              <form onSubmit={null} className="box">
-                <article className="newlyUpdatedText is-white">
-                  <div
-                    className="newlyUpdatedText-header"
-                    style={{ padding: "0" }}
-                  >
-                    <h2>Create new board</h2>
-                    <button
-                      className="delete"
-                      onClick={(e) => {
-                        e.preventDefault();
+        <Post
+          // boardId={val.id}
+          isActivePost={isActivePost}
+          togglePost={togglePost}
+          getBoards={getBoards}
+          setPostText={setPostText}
+          setFile={setFile}
+          setFilename={setFilename}
+          addPost={addPost}
+          boardId={boardId}
+        />
+        
+        <div className={isActive ? "hero-body hide" : "hero-body"}>
+          <div className="container">
+            <div className="columns is-centered">
+              <div className="column is-5-desktop">
+                <form 
+// @ts-ignore
+                onSubmit={null} className="box">
+                  <article className="newlyUpdatedText is-white">
+                    <div
+                      className="newlyUpdatedText-header"
+                      style={{ padding: "0" }}
+                    >
+                      <h2>Create new board</h2>
+                      <button
+                        className="delete"
+                        onClick={(e) => {
+                          e.preventDefault();
 
-                        toggleClass();
-                      }}
-                    ></button>
-                  </div>
-                </article>
-                <p className="has-text-centered">{null}</p>
-                <div className="field is-hotizontal mt-5">
-                  <label className="label">Who is this board for?</label>
-                  <div className="field is-horizontal">
+                          toggleClass();
+                        }}
+                      ></button>
+                    </div>
+                  </article>
+                  <p className="has-text-centered">{null}</p>
+                  <div className="field is-hotizontal mt-5">
+                    <label className="label">Who is this board for?</label>
+                    <div className="field is-horizontal">
+                      <div className="field-body">
+                        <div className="field">
+                          <p className="control is-expanded left">
+                            <input
+                              className="input"
+                              type="text"
+                              placeholder="First name"
+                              onChange={(event) => {
+                                setFirstName(event.target.value);
+                              }}
+                              required
+                            />
+                          </p>
+                        </div>
+                        <div className="field">
+                          <p className="control is-expanded right">
+                            <input
+                              className="input"
+                              type="text"
+                              placeholder="Last name"
+                              onChange={(event) => {
+                                setLastName(event.target.value);
+                              }}
+                              required
+                            />
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* title section */}
+                    <label className="label">
+                      What title would you like on top of the board?
+                    </label>
                     <div className="field-body">
                       <div className="field">
                         <p className="control is-expanded left">
                           <input
                             className="input"
                             type="text"
-                            placeholder="First name"
+                            placeholder="Happy Bday, Get Well Soon, You're Amazing, etc."
                             onChange={(event) => {
-                              setFirstName(event.target.value);
-                            }}
-                            required
-                          />
-                        </p>
-                      </div>
-                      <div className="field">
-                        <p className="control is-expanded right">
-                          <input
-                            className="input"
-                            type="text"
-                            placeholder="Last name"
-                            onChange={(event) => {
-                              setLastName(event.target.value);
+                              setTitle(event.target.value);
                             }}
                             required
                           />
                         </p>
                       </div>
                     </div>
-                  </div>
 
-                  {/* title section */}
-                  <label className="label">
-                    What title would you like on top of the board?
-                  </label>
-                  <div className="field-body">
-                    <div className="field">
-                      <p className="control is-expanded left">
-                        <input
-                          className="input"
-                          type="text"
-                          placeholder="Happy Bday, Get Well Soon, You're Amazing, etc."
-                          onChange={(event) => {
-                            setTitle(event.target.value);
-                          }}
-                          required
-                        />
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* next button */}
-                  <div className="field mt-4">
-                    <div className="field-body">
-                      <div className="field">
-                        <div className="control is-expanded">
-                          <button
-                            className="button is-fullwidth is-primary"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              addBoard();
-                              toggleClass();
-                            }}
-                          >
-                            Create board
-                          </button>
+                    {/* next button */}
+                    <div className="field mt-4">
+                      <div className="field-body">
+                        <div className="field">
+                          <div className="control is-expanded">
+                            <button
+                              className="button is-fullwidth is-primary"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                addBoard();
+                                toggleClass();
+                              }}
+                            >
+                              Create board
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </form>
+                </form>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* check if we are logged in  */}
-      {(window.location.href === "http://localhost:3000/dashboard") === true ? (
-        <div className="App">
-          <hr />
-          <div className="boards">
-            {boardList.map((val, key) => {
-              return (
-                <div
-                  className="board box column is-9-desktop"
-                  style={{ width: "100%" }}
-                >
-                  <div className="board-inside">
-                    <img
-                      className="board-img"
-                      src="https://source.unsplash.com/random/175%C3%97175/?calm"
-                      alt=""
-                    />
+        {/* check if we are logged in  */}
+        {(window.location.href === "http://localhost:3000/dashboard") === true ? (
+          <div className="App">
+            <hr />
+            <div className="boards">
+              {boardList.map((val, 
+// @ts-ignore
+              key) => {
+                return (
+                  <div
+                    className="board box column is-9-desktop"
+                    style={{ width: "100%" }}
+                  >
+                    <div className="board-inside">
+                      <img
+                        className="board-img"
+                        src="https://source.unsplash.com/random/175%C3%97175/?calm"
+                        alt=""
+                      />
+                      
+                      <div className="board-column">
+                        <div className="board-upper">
+                          <h1 className="board-title">{val
+// @ts-ignore
+                          .title}</h1>
+                          <a href={`http://localhost:3000/boards/${val
+// @ts-ignore
+                          .id}`}>
+                            <button
+                              className="button is-info is-outlined"
+                              // onClick={() => {
+                              //   getPosts(val.id);
+                              //   // history.push(`/boards/${val.id}`);
+                              // }}
+                            >
+                              View
+                            </button>
+                          </a>
+                          <hr />
+                          <div className="board-names">
+                            <h3 className="board-name-for">For</h3>
+                            <h3 className="board-name">
+                              {val
+// @ts-ignore
+                              .firstName} {val.lastName}
+                            </h3>
+                            {/* <h1>{val.name}</h1> */}
+                          </div>
+                        </div>
+                        <div className="board-lower">
+                          <div className="column sm-5 no-padding">
+                            <h3 className="board-name-grey">
+                              {val
+// @ts-ignore
+                              .createdByName ? `Creator` : null}
+                            </h3>
+                            <h3 className="h3-text">
+                              {val
+// @ts-ignore
+                              .createdByName ? val.createdByName : null}
+                            </h3>
+                          </div>
 
-                    <div className="board-column">
-                      <div className="board-upper">
-                        <h1 className="board-title">{val.title}</h1>
-                        <a href={`http://localhost:3000/boards/${val.id}`}>
+                          <div className="column sm-5 no-padding">
+                            <h3 className="board-name-grey">Created</h3>
+                            <h3 className="h3-text">
+                              {formateDate(val
+// @ts-ignore
+                              .createdOn)}
+                            </h3>
+                          </div>
+
+                          <div className="column sm-5 no-padding">
+                            <h3 className="board-name-grey">Posts</h3>
+                            <h3 className="h3-text">
+                              {val
+// @ts-ignore
+                              .postCount <= 0 ? "0" : val.postCount}
+                            </h3>
+                            <h3 className="board-name-grey">Board id</h3>
+                            <h3 className="h3-text">{val
+// @ts-ignore
+                            .id}</h3>
+                          </div>
                           <button
-                            className="button is-info is-outlined"
-                            // onClick={() => {
-                            //   getPosts(val.id);
-                            //   // history.push(`/boards/${val.id}`);
-                            // }}
+                            className="button is-info is-rounded"
+                            onClick={() => {
+                              if (isActivePost) setIsActivePost(false);
+                              // @ts-ignore
+                              setBoardId(val.id);
+                            }}
                           >
-                            View
+                            Add to board
                           </button>
-                        </a>
-                        <hr />
-                        <div className="board-names">
-                          <h3 className="board-name-for">For</h3>
-                          <h3 className="board-name">
-                            {val.firstName} {val.lastName}
-                          </h3>
-                          {/* <h1>{val.name}</h1> */}
                         </div>
-                      </div>
-                      <div className="board-lower">
-                        <div className="column sm-5 no-padding">
-                          <h3 className="board-name-grey">
-                            {val.createdByName ? `Creator` : null}
-                          </h3>
-                          <h3 className="h3-text">
-                            {val.createdByName ? val.createdByName : null}
-                          </h3>
-                        </div>
-
-                        <div className="column sm-5 no-padding">
-                          <h3 className="board-name-grey">Created</h3>
-                          <h3 className="h3-text">
-                            {formateDate(val.createdOn)}
-                          </h3>
-                        </div>
-
-                        <div className="column sm-5 no-padding">
-                          <h3 className="board-name-grey">Posts</h3>
-                          <h3 className="h3-text">
-                            {val.postCount <= 0 ? "0" : val.postCount}
-                          </h3>
-                          <h3 className="board-name-grey">Board id</h3>
-                          <h3 className="h3-text">{val.id}</h3>
-                        </div>
-                        <button
-                          className="button is-info is-rounded"
-                          onClick={() => {
-                            // alert(val.id);
-                            if (isActivePost) setIsActivePost(false);
-                            setBoardId(val.id);
-                          }}
-                        >
-                          Add to board
-                        </button>
                       </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
-        </div>
-      ) : null}
+        ) : null}
+      </div>
     </div>
   );
 }
