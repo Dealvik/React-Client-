@@ -11,6 +11,8 @@ import Masonry from "react-masonry-css";
 import UnopDropdown from "unop-react-dropdown";
 import React from "react";
 
+var editId;
+
 function App() {
   // @ts-ignore
   const history = useHistory();
@@ -37,7 +39,7 @@ function App() {
   const [viewportWidth, setViewportWidth] = useState(getWindowDimensions());
   const [postDropdownActive, setPostDropdownActive] = useState(false);
 
-  const [editPostId, setEditPostId] = useState(0);
+  // const [editPostId, setEditPostId] = useState(0);
   // @ts-ignore
   const [newlyUpdatedText, setNewlyUpdatedText] = useState("");
 
@@ -142,12 +144,14 @@ function App() {
   };
 
   const cancelEdit = () => {
-    setEditPostId(0);
+    editId = 0;
+    // setEditPostId(0);
     setPostAreaText("");
   };
 
   const editPost = (id, text) => {
-    setEditPostId(id);
+    editId = id;
+    // alert(editId);
     setPostAreaText(text);
   };
 
@@ -309,18 +313,17 @@ function App() {
           <form onSubmit={onSubmit} className="box">
           <article className="message is-white">
           <div className="message-header" style={{ padding: "0" }}>
-          <button type="submit">Submit</button>
-              <h2>Add media for post {}</h2>
-              {/* delete button */}
-              <button
-                className="delete"
-                onClick={(e) => {
-                  e.preventDefault();
-                  // console.log(props.isActivePost);
-                  setPostId("");
-                }}
-              ></button>
-            </div>
+          <h2>Add media for post {}</h2>
+          {/* delete button */}
+          <button
+            className="delete"
+            onClick={(e) => {
+              e.preventDefault();
+              // console.log(props.isActivePost);
+              setPostId("");
+            }}
+          ></button>
+          </div>
             
             <div className="custom-file mb-4">
               <input
@@ -382,41 +385,31 @@ function App() {
               className="my-masonry-grid"
               columnClassName="my-masonry-grid_column"
             >
-              {postList.map(function (item, 
-// @ts-ignore
-              i) {
+              {postList.map(function (item, i) {
                 return (
                   <div className="container">
                     <div className="columns is-centered">
                       <div className="column no-flex">
-                        <form 
-// @ts-ignore
-                        onSubmit={null} className="box">
+                        <form onSubmit={null} className="box">
                           <article className="message is-white">
                             <div
                               className="message-header"
                               style={{ padding: "0", wordBreak: "break-all", display: "flex", flexDirection: "column", }}
                             >
                               {/* images inserted here */}
-                              {item
-// @ts-ignore
-                              .imageId !== null ? 
+                              {item.imageId !== null ? 
                               // @ts-ignore
                               <img style={{marginBottom: "20px"}} src={"http://localhost:5000/images/"+item.imageId+"."+item.imageType} alt="test" width="300" height="300" /> : null}
-                              
                               <div
                                 className={
                                   // @ts-ignore
-                                  item.id === editPostId
+                                  item.id === editId
                                     ? "hidden"
                                     : "post-message-visible"
                                 }
                               >
-                                {item
-// @ts-ignore
-                                .text}
+                                {item.text}
                               </div>
-
                               <textarea
                                 // @ts-ignore
                                 id={"text" + item.id}
@@ -426,7 +419,7 @@ function App() {
                                 defaultValue={item.text}
                                 className={
                                   // @ts-ignore
-                                  item.id === editPostId
+                                  item.id === editId
                                     ? "post-text-editable-visible"
                                     : "hidden"
                                 }
@@ -439,7 +432,7 @@ function App() {
                               id={item.id}
                               className={
                                 // @ts-ignore
-                                item.id === editPostId
+                                item.id === editId
                                   ? "post-edit"
                                   : "post-edit hidden"
                               }
