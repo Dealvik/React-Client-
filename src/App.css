@@ -108,11 +108,12 @@ h3 {
   padding-bottom: 0px !important;
   padding-left: 0px !important;
 
-  color: #3a4651;
+  color: #ffffff;
   text-decoration: none;
   /* font-family: museo-sans,Helvetica Neue,Helvetica,Arial,sans-serif; */
   font-weight: 500;
-  font-size: 21px;
+  font-size: 30px;
+  font-weight: 700;
 }
 
 .board-column {
@@ -122,11 +123,11 @@ h3 {
 }
 
 .board-upper {
-  padding: 20px 0px 10px;
+  /* padding: 20px 0px 10px;
   display: flex;
   flex-direction: row;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: wrap; */
 }
 
 .board-upper button {
@@ -281,6 +282,22 @@ h3 {
   float: right;
 }
 
+.fileUpload {
+  background-color: #c0c0c0;
+  position:fixed;
+  top:0;
+  width:100%;
+  z-index:100;
+  position: fixed;
+  width: 500px;
+  height: 200px;
+  top: 50%;
+  left: 50%;
+  margin-top: -100px; /* Negative half of height. */
+  margin-left: -250px; /* Negative half of width. */
+
+}
+
 .hidden {
   display: none;
 }
@@ -302,11 +319,19 @@ h3 {
   font-weight: 400;
   word-wrap: break-word;
 }
-
+.hello {
+  margin-top: 200px;
+}
+.hero-body {
+  color:rgba(0, 0, 0, 0.15);
+}
 .banner {
+  position:absolute;
+  left:0;
+  right:0;
   width: 100% !important;
   height: 150px;
-  background: #ee3350;
+  background: #589BD2;
   text-align: center;
   margin-top: 75px;
   text-align: center;
@@ -315,7 +340,7 @@ h3 {
   display: flex;
   align-content: center;
   flex-direction: column;
-  
+  margin-top: -150px;
 }
 
 .banner-content {

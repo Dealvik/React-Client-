@@ -3,7 +3,7 @@ import React, { useState } from "react";
 
 const Post = (props) => {
   const [file, setFile] = useState('');
-  const [filename, setFilename] = useState('Choose File 2');
+  const [filename, setFilename] = useState('Choose File');
   const [uploadedFile, setUploadedFile] = useState({});
   const [message, setMessage] = useState('');
   const [uploadPercentage, setUploadPercentage] = useState(0);
@@ -79,6 +79,7 @@ const Post = (props) => {
                 className="custom-file-input"
                 id="customFile"
                 onChange={onChange}
+                multiple
               />
               <label className='custom-file-label' htmlFor='customFile'>
                 {filename}
