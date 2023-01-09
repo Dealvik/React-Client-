@@ -324,7 +324,6 @@ function App() {
             }}
           ></button>
           </div>
-            
             <div className="custom-file mb-4">
               <input
                 type="file"
@@ -397,6 +396,17 @@ function App() {
                               style={{ padding: "0", wordBreak: "break-all", display: "flex", flexDirection: "column", }}
                             >
                               {/* images inserted here */}
+                              {/* {
+                                item.images.map(function (item, i) {
+
+                                })
+                              } */}
+                              {item.images.map(image => 
+                              <div>
+                                <img style={{marginBottom: "20px"}} src={"http://localhost:5000/images/"+image.imageId+"."+image.imageType} alt="test" width="300" height="300" /> 
+                              </div>)}
+
+
                               {item.imageId !== null ? 
                               // @ts-ignore
                               <img style={{marginBottom: "20px"}} src={"http://localhost:5000/images/"+item.imageId+"."+item.imageType} alt="test" width="300" height="300" /> : null}
