@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      function removePostWithId(arr, id) {
+        return arr.filter((obj) => obj.id !== id);
+      }
+      var json = `[
+                        {
+                            "id": 319,
+                            "text": "waddAWd ASD s ASD",
+                            "createdOn": "2023-01-15T05:00:00.000Z",
+                            "createdBy": 28,
+                            "name": "David Kofman",
+                            "images": [{ "imageId": null, "imageType": null }]
+                        },
+                        {
+                            "id": 317,
+                            "text": "waddAWd",
+                            "createdOn": "2023-01-15T05:00:00.000Z",
+                            "createdBy": 28,
+                            "name": "David Kofman",
+                            "images": [{ "imageId": null, "imageType": null }]
+                        },
+                        {
+                            "id": 309,
+                            "text": "asd",
+                            "createdOn": "2023-01-08T05:00:00.000Z",
+                            "createdBy": 28,
+                            "name": "David Kofman",
+                            "images": [
+                            { "imageId": 157, "imageType": "png" },
+                            { "imageId": 156, "imageType": "jpg" }
+                            ]
+                        }
+                  ]`;
+
+      function removeImageWithId(arr, imageId) {
+        var newArray = [];
+        arr.forEach((element) => {
+          // add an altered type
+          let id = element.id;
+          let text = element.text;
+          let createdOn = element.createdOn;
+          let createdBy = element.createdBy;
+          let name = element.name;
+          let images = element.images.filter(
+            (image) => image.imageId !== imageId
+          );
+
+          let newElement = { id, text, createdOn, createdBy, name, images };
+          console.log(newElement);
+          newArray.push(newElement);
+        });
+        return newArray;
+      }
+
+      var obj = JSON.parse(json);
+      var newList = removeImageWithId(obj, 157);
+
+      console.log("new list \n");
+      newList.forEach((element) => {
+        console.log(element);
+      });
+    </script>
+  </body>
+</html>

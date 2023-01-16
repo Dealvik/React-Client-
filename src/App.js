@@ -10,6 +10,7 @@ import Post from "./components/Post";
 import Masonry from "react-masonry-css";
 import UnopDropdown from "unop-react-dropdown";
 import React from "react";
+import { FaTimesCircle } from 'react-icons/fa';
 
 var editId;
 
@@ -29,6 +30,7 @@ function App() {
   const [postText, setPostText] = useState("");
   const [boardList, setboardList] = useState([]);
   const [postList, setPostList] = useState([]);
+  const [imageList, setImageList] = useState([{}]);
 
   const [boardId, setBoardId] = useState(0);
 
@@ -123,23 +125,8 @@ function App() {
   };
 
   const getPosts = (id) => {
-    Axios.get(`http://localhost:5000/boards/${id}`).then((response) => {
-      // console.log(response.data);
+    Axios.get(`http://localhost:5000/boards/${id}?v=2`).then((response) => {
       setPostList(response.data);
-      // setPostList(
-      //   response.data.map((val) => {
-      //     console.log(val);
-      //     return val.id === id
-      //       ? {
-      //         id: val.id,
-      //         text: val.text,
-      //         createdBy: val.createdBy,
-      //         boardId: val.boardId,
-      //         createdOn: val.createdOn,
-      //         }
-      //       : val;
-      //   })
-      // );
     });
   };
 
@@ -178,30 +165,9 @@ function App() {
       })
       .finally(() => {
         cancelEdit();
-        window.location.reload();
       });
   };
 
-  // const updateBoardWage = (id) => {
-  //   Axios.put("http://localhost:5000/update", { wage: newWage, id: id }).then(
-  //     () => {
-  //       setboardList(
-  //         boardList.map((val) => {
-  //           return val.id === id
-  //             ? {
-  //                 id: val.id,
-  //                 name: val.name,
-  //                 country: val.country,
-  //                 age: val.age,
-  //                 position: val.position,
-  //                 wage: newWage,
-  //               }
-  //             : val;
-  //         })
-  //       );
-  //     }
-  //   );
-  // };
   const onChangeFile = (e) => {
       setFile(e.target.files[0]);
       // setFilename(e.target.files[0].name);
@@ -224,17 +190,47 @@ function App() {
     });
   };
 
+  function removePostWithId(arr, id) {
+    return arr.filter((obj) => obj.id !== id);
+  }
+
+  function removeImageWithId(arr, imageId) {
+    var newArray = [];
+    arr.forEach((element) => {
+      // add an altered type
+      let id = element.id;
+      let text = element.text;
+      let createdOn = element.createdOn;
+      let createdBy = element.createdBy;
+      let name = element.name;
+      let images = element.images.filter(
+        (image) => image.imageId !== imageId
+      );
+
+      let newElement = { id, text, createdOn, createdBy, name, images };
+      console.log(newElement);
+      newArray.push(newElement);
+    });
+    return newArray;
+  }
+
   const deletePost = (id) => {
     // @ts-ignore
-    Axios.delete(`http://localhost:5000/deletePost/${id}`).then((response) => {
-      setPostList(
-        postList.filter((val) => {
-          // @ts-ignore
-          return val.id !== id;
-        })
-      );
+    Axios.delete(`http://localhost:5000/deletePost/${id}`).then(() => {
+     var updatedList = removePostWithId(postList, id);
+      setPostList(updatedList);
     });
   };
+
+  const deleteImage = (imageId) => {
+    Axios.delete(`http://localhost:5000/deleteImage/${imageId}`).then(() => {
+      var updatedList = removeImageWithId(postList, imageId);
+      updatedList.forEach((element) => {
+        console.log(element);
+      });
+      setPostList(updatedList);
+    });
+  }
 
   async function onSubmit(e) {
     e.preventDefault();    
@@ -256,6 +252,7 @@ function App() {
 
           if (percentCompleted >= 100) {
             setPostId("");
+            getPosts(boardIdParam);
           } 
           // setUploadPercentage(parseInt(Math.round((progressEvent.loaded * 100) / progressEvent.total)));
           // setTimeout(() => setUploadPercentage(0), 10000);
@@ -395,21 +392,36 @@ function App() {
                               className="message-header"
                               style={{ padding: "0", wordBreak: "break-all", display: "flex", flexDirection: "column", }}
                             >
-                              {/* images inserted here */}
-                              {/* {
-                                item.images.map(function (item, i) {
-
-                                })
-                              } */}
-                              {item.images.map(image => 
-                              <div>
-                                <img style={{marginBottom: "20px"}} src={"http://localhost:5000/images/"+image.imageId+"."+image.imageType} alt="test" width="300" height="300" /> 
-                              </div>)}
-
-
-                              {item.imageId !== null ? 
+                              {
+                                item.images.map(image => 
+                                  <div>
+                                  {image.imageId !== null ? 
+                                    <div>
+                                      <button 
+                                        style={{
+                                          position: "absolute",
+                                          all: "unset",
+                                          cursor: "pointer",
+                                          float: "right"
+                                        }}
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          deleteImage(image.imageId);
+                                        }}
+                                      >
+                                      <FaTimesCircle />
+                                      </button>
+                                        
+                                        <img style={{marginBottom: "20px"}} src={"http://localhost:5000/images/"+image.imageId+"."+image.imageType} alt="test" width="300" height="300" /> 
+                                      </div>
+                                    :null}
+                                  </div>
+                                )
+                              }
+                              {/* {item.imageId !== (null || undefined) ? 
                               // @ts-ignore
-                              <img style={{marginBottom: "20px"}} src={"http://localhost:5000/images/"+item.imageId+"."+item.imageType} alt="test" width="300" height="300" /> : null}
+                              <img style={{marginBottom: "20px"}} src={"http://localhost:5000/images/"+item.imageId+"."+item.imageType} alt="test" width="300" height="300" /> 
+                              : null} */}
                               <div
                                 className={
                                   // @ts-ignore
