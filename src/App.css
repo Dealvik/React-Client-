@@ -14,9 +14,18 @@
 
 .xButton {
   z-index: 5;
-  position: absolute;
-  top: -11px;
-  right: -10px;
+  /* position: absolute;
+  top: 12px;
+  right: 12px; */
+  position: relative;
+  top: 12px;
+  right: -288px;
+  color: white;
+  padding: 1px;
+  width: 18px;
+  height: 18px;
+  background-color: black;
+  border-radius: 50px;
 }
 
 .body {
@@ -24,6 +33,17 @@
   font-weight: 300;
 }
 
+.postImage {
+  /* width: 100%; */
+  width: 322px;
+  /* margin-bottom: 20px; */
+  position: relative;
+  top: -21px;
+}
+
+.bottomG {
+  padding: 1.25rem;
+}
 .register-login-form {
   display: flex;
   flex-direction: column;
@@ -175,6 +195,16 @@ h3 {
   padding-left: 0px !important;
 }
 
+.postBox {
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 0.5em 1em -0.125em rgb(10 10 10 / 10%), 0 0px 0 1px rgb(10 10 10 / 2%);
+  color: #4a4a4a;
+  display: block;
+  /* padding: 1.25rem; */
+  padding: 0px;
+}
+
 .board-lower {
   border-top: 2px solid #dadcdf;
   display: flex;
@@ -253,6 +283,7 @@ h3 {
   align-items: flex-end;
   justify-content: center;
   padding-top: 5px;
+  padding: 1.25rem;
 }
 
 .dropdown {
@@ -305,6 +336,7 @@ h3 {
 }
 
 .post-message-visible {
+  margin-top: 32px;
   font-size: 14px;
   font-weight: 400;
   word-wrap: break-word;

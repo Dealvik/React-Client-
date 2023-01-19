@@ -387,7 +387,7 @@ function App() {
                   <div className="container">
                     <div className="columns is-centered">
                       <div className="column no-flex">
-                        <form onSubmit={null} className="box">
+                        <form onSubmit={null} className="postBox">
                           <article className="message is-white">
                             <div
                               className="message-header"
@@ -397,7 +397,7 @@ function App() {
                                 item.images.map(image => 
                                   <div>
                                   {image.imageId !== null ? 
-                                    <div>
+                                    <div style={{marginBottom: "-25px"}}>
                                       <div className="xButton">
                                         <button 
                                           style={{
@@ -415,7 +415,7 @@ function App() {
                                         </button>
                                       </div>
                                         
-                                        <img style={{marginBottom: "20px"}} src={"http://localhost:5000/images/"+image.imageId+"."+image.imageType} alt="test" width="300" height="300" /> 
+                                        <img className="postImage" src={"http://localhost:5000/images/"+image.imageId+"."+image.imageType} alt="test" /> 
                                       </div>
                                     :null}
                                   </div>
