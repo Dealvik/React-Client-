@@ -61,6 +61,7 @@ function App() {
     };
   }
 
+
   function toggleClass() {
     setActive(!isActive);
   }
@@ -397,20 +398,22 @@ function App() {
                                   <div>
                                   {image.imageId !== null ? 
                                     <div>
-                                      <button 
-                                        style={{
-                                          position: "absolute",
-                                          all: "unset",
-                                          cursor: "pointer",
-                                          float: "right"
-                                        }}
-                                        onClick={(e) => {
-                                          e.preventDefault();
-                                          deleteImage(image.imageId);
-                                        }}
-                                      >
-                                      <FaTimesCircle />
-                                      </button>
+                                      <div className="xButton">
+                                        <button 
+                                          style={{
+                                            position: "absolute",
+                                            all: "unset",
+                                            cursor: "pointer",
+                                            float: "right"
+                                          }}
+                                          onClick={(e) => {
+                                            e.preventDefault();
+                                            deleteImage(image.imageId);
+                                          }}
+                                        >
+                                        <FaTimesCircle />
+                                        </button>
+                                      </div>
                                         
                                         <img style={{marginBottom: "20px"}} src={"http://localhost:5000/images/"+image.imageId+"."+image.imageType} alt="test" width="300" height="300" /> 
                                       </div>
@@ -568,7 +571,11 @@ function App() {
   }, [boardId, boardIdParam]);
 
   return (
-    <div>
+    <div style={{ 
+      backgroundImage: `url("https://source.unsplash.com/random/1920x1080/?pattern,calm,hq")`,
+      backgroundSize: `cover`,
+      backgroundRepeat: `no-repeat`
+    }}>
      
       <div className="app-container">
         <BrowserRouter>

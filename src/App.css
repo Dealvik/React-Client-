@@ -12,6 +12,13 @@
   margin-left: auto;
 }
 
+.xButton {
+  z-index: 5;
+  position: absolute;
+  top: -11px;
+  right: -10px;
+}
+
 .body {
   font-size: 16px;
   font-weight: 300;
@@ -97,22 +104,22 @@
 
 .board-inside h1,
 h3 {
-  padding-top: 20px !important;
+  padding-top: 0px !important;
   padding-right: 20px !important;
-  padding-bottom: 0px !important;
+  padding-bottom: 25px !important;
   padding-left: 0px !important;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: museo-sans,Helvetica Neue,Helvetica,Arial,sans-serif;
+  font-weight: 600;
 }
 
 .board-title {
   padding-bottom: 0px !important;
   padding-left: 0px !important;
-
-  color: #3a4651;
+  font-size: 38px;
+  color: white;
   text-decoration: none;
-  /* font-family: museo-sans,Helvetica Neue,Helvetica,Arial,sans-serif; */
+  font-family: museo-sans,Helvetica Neue,Helvetica,Arial,sans-serif;
   font-weight: 500;
-  font-size: 21px;
 }
 
 .board-column {
@@ -304,9 +311,8 @@ h3 {
 }
 
 .banner {
-  width: 100% !important;
-  height: 150px;
-  background: #ee3350;
+  height: 175px;
+  background: #589BD2;
   text-align: center;
   margin-top: 75px;
   text-align: center;
@@ -315,7 +321,9 @@ h3 {
   display: flex;
   align-content: center;
   flex-direction: column;
-  
+  width: 100vw !important;
+  position: relative;
+  left: calc(-50vw + 50%);
 }
 
 .banner-content {
