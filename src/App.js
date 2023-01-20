@@ -126,8 +126,10 @@ function App() {
   };
 
   const getPosts = (id) => {
-    Axios.get(`http://localhost:5000/boards/${id}?v=2`).then((response) => {
-      setPostList(response.data);
+    Axios.get(`http://localhost:5000/boards/${id}?v=3`).then((response) => {
+      setPostList(response.data.posts);
+      // setBoardName(response.data.name);
+      // setBoardId(response.data.id)
     });
   };
 
@@ -363,17 +365,19 @@ function App() {
         </div>
       </form>
       </div> : null)}
-          
-        
-        {/* <button
-            className="button is-info is-rounded"
-            onClick={() => {
-              if (isActivePost) setIsActivePost(false);
-              // setBoardId(val.id);
-            }}
-          >
-            Add to boardsdsd
-          </button> */}
+        <button
+          className="button is-info is-rounded buttonAddToBoard"
+          onClick={() => {
+            let boardId = window.location.href;
+            alert(boardId);
+// ?/             === "http://localhost:3000/dashboard") === true ? (
+          //   if (isActivePost) setIsActivePost(false);
+          //   // setBoardId(val.id);
+          //   alert("board id is " + boardId);
+          }}
+        >
+          Add to board
+        </button> 
         
         <div className="hero-body hello">
           <div className="wrap">
@@ -737,9 +741,7 @@ function App() {
                           <h1 className="board-title">{val
 // @ts-ignore
                           .title}</h1>
-                          <a href={`http://localhost:3000/boards/${val
-// @ts-ignore
-                          .id}`}>
+                          <a href={`http://localhost:3000/boards/${val.id}`}>
                             <button
                               className="button is-info is-outlined"
                               // onClick={() => {
@@ -802,6 +804,7 @@ function App() {
                               if (isActivePost) setIsActivePost(false);
                               // @ts-ignore
                               setBoardId(val.id);
+                              alert(boardId);
                             }}
                           >
                             Add to board

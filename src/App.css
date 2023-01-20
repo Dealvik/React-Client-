@@ -340,6 +340,25 @@ h3 {
   font-size: 14px;
   font-weight: 400;
   word-wrap: break-word;
+  padding: 1.25rem;
+}
+
+.buttonAddToBoard {
+  border-radius: 9999px !important; 
+  padding-left: calc(1em + 0.25em) !important;
+  margin-left: 9vw !important;
+  padding-right: calc(1em + 0.25em) !important;
+  background: #fff !important;
+  border-radius: 24px !important;
+  box-shadow: 0 2px 6px 0 rgb(0 0 0 / 40%) !important;
+  color: #3a4651 !important; 
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  left: 0 !important;
+  padding: 10px 20px !important;
+  position: absolute !important;
+  top: 222px !important;
+  transition: color .2s ease !important;
 }
 
 .banner {
