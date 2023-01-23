@@ -20,6 +20,11 @@ const Post = (props) => {
     props.setFilename(e.target.files[0].name);
   };
 
+  function newPostCreated() {
+    props.getPostsForCurrentId();
+    // alert("progress completed");
+  }
+
   const onSubmit = async e => {
     e.preventDefault();
     const formData = new FormData();
@@ -34,7 +39,8 @@ const Post = (props) => {
         },
         onUploadProgress: progressEvent => {
           setUploadPercentage(parseInt(Math.round((progressEvent.loaded * 100) / progressEvent.total)));
-          setTimeout(() => setUploadPercentage(0), 10000);
+          // setTimeout(() => setUploadPercentage(0), 10000);
+          setTimeout(() => newPostCreated(), 100);
         }
       });
 
@@ -137,6 +143,8 @@ const Post = (props) => {
                         // e.preventDefault();
                         // setBoardId("81");
                         // props.addPost();
+                        // alert(props.boardId);
+                        // props.getPosts();
                         props.togglePost();
                         // props.getBoards();
                       }}

@@ -33,7 +33,7 @@ function App() {
   const [imageList, setImageList] = useState([{}]);
 
   const [boardId, setBoardId] = useState(0);
-
+  const [boardName, setBoardName] = useState("");
   // @ts-ignore
   const [sorted, setSorted] = useState(false);
   const [boardIdParam, setBoardIdParam] = useState("");
@@ -128,8 +128,8 @@ function App() {
   const getPosts = (id) => {
     Axios.get(`http://localhost:5000/boards/${id}?v=3`).then((response) => {
       setPostList(response.data.posts);
-      // setBoardName(response.data.name);
-      // setBoardId(response.data.id)
+      setBoardName(response.data.name);
+      setBoardId(response.data.id)
     });
   };
 
@@ -143,6 +143,7 @@ function App() {
     editId = id;
     // alert(editId);
     setPostAreaText(text);
+    // alert(text + id);
   };
 
   function addMedia(postId) {
@@ -275,6 +276,10 @@ function App() {
     }
   }
 
+  function getPostsForCurrentId() {
+    getPosts(boardIdParam);
+  }
+
   const formateDate = (date) => {
     return date.split("T")[0];
   };
@@ -287,24 +292,15 @@ function App() {
       <div>
          <div className="banner">
             <div className="banner-content">
-              {boardList.map((val, 
-// @ts-ignore
-              key) => {
-                return (
-                  <div className="board-inside">
-                    <div className="board-column">
-                      <div className="board-upper">
-                        {(window.location.href === ("http://localhost:3000/boards/" + val
-// @ts-ignore
-                        .boardId)) ? (
-                        <h1 className="board-title">{val
-// @ts-ignore
-                        .title}</h1>) : null}
-                      </div>
-                    </div>
+              <div className="board-inside">
+                <div className="board-column">
+                  <div className="board-upper">
+                    <h1 className="board-title">
+                      {boardName}
+                    </h1>
                   </div>
-                );
-              })}
+                </div>
+              </div>
             </div>
           </div>
           
@@ -368,8 +364,9 @@ function App() {
         <button
           className="button is-info is-rounded buttonAddToBoard"
           onClick={() => {
-            let boardId = window.location.href;
-            alert(boardId);
+            if (isActivePost) setIsActivePost(false);
+            setBoardId(boardId);
+
 // ?/             === "http://localhost:3000/dashboard") === true ? (
           //   if (isActivePost) setIsActivePost(false);
           //   // setBoardId(val.id);
@@ -605,12 +602,13 @@ function App() {
           // boardId={val.id}
           isActivePost={isActivePost}
           togglePost={togglePost}
-          getBoards={getBoards}
+          getPostsForCurrentId={getPostsForCurrentId}
           setPostText={setPostText}
           setFile={setFile}
           setFilename={setFilename}
           addPost={addPost}
           boardId={boardId}
+          // getPosts={getPosts(boardId)}
         />
         
         <div className={isActive ? "hero-body hide" : "hero-body"}>
@@ -804,7 +802,6 @@ function App() {
                               if (isActivePost) setIsActivePost(false);
                               // @ts-ignore
                               setBoardId(val.id);
-                              alert(boardId);
                             }}
                           >
                             Add to board

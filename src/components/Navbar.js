@@ -58,7 +58,7 @@ const Navbar = (props) => {
             <div className="navbar-item">
               <div className="buttons">
                 {window.location.href ===
-                "http://localhost:3000/dashboard" ? null : (
+                "http://localhost:3000/dashboard" ? null : (  
                   <button
                     onClick={() => {
                       if (
